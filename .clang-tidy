@@ -1,0 +1,19 @@
+---
+# Check groups: bugprone, cert, performance, readability.
+# Disabled checks, each with its reason:
+#   readability-magic-numbers             noisy in tests and protocol tables; revisit Thursday
+#   readability-identifier-length         short loop and lambda names are fine
+#   bugprone-easily-swappable-parameters  flags most two-argument functions
+Checks: >
+  -*,
+  bugprone-*,
+  cert-*,
+  performance-*,
+  readability-*,
+  -readability-magic-numbers,
+  -readability-identifier-length,
+  -bugprone-easily-swappable-parameters
+WarningsAsErrors: '*'
+HeaderFilterRegex: '(lib|app)/.*'
+FormatStyle: file
+...

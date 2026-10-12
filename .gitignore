@@ -1,0 +1,33 @@
+# CMake build trees (one per preset)
+build/
+build-*/
+CMakeUserPresets.json
+compile_commands.json
+Testing/
+
+# Compiler and coverage output
+*.o
+*.a
+*.so
+*.gcda
+*.gcno
+*.info
+coverage/
+
+# Python
+__pycache__/
+*.pyc
+.pytest_cache/
+.venv/
+venv/
+
+# Editors and OS
+.vscode/
+.idea/
+*.swp
+.DS_Store
+
+# Secrets: private signing keys never belong in the repo
+*.key
+*.pem
+!*.pub.pem
