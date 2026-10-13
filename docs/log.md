@@ -15,3 +15,11 @@
 Also, ordered parts for this exploration (CAN related hardware and some microcontrollers and breakout boards).
 
 
+10/13/26 - Build system - CMake, etc. verified with scripts/verify.sh 
+  == native: configure, build, test
+  100% tests passed, 0 tests failed out of 1
+  == cross-x86_64: configure, build, test
+  100% tests passed, 0 tests failed out of 1
+  == smoke-run the cross-x86_64 daemon under QEMU
+  charger-daemon: hello
+  == OK: native and cross-x86_64 built and tested from a clean clone in 20 s
