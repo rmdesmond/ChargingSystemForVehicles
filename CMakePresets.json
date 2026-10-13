@@ -1,0 +1,51 @@
+{
+    "version": 6,
+    "cmakeMinimumRequired": { "major": 3, "minor": 25, "patch": 0 },
+    "configurePresets": [
+        {
+            "name": "base",
+            "hidden": true,
+            "generator": "Ninja",
+            "binaryDir": "${sourceDir}/build-${presetName}",
+            "cacheVariables": {
+                "CMAKE_BUILD_TYPE": "RelWithDebInfo",
+                "CMAKE_CXX_COMPILER_LAUNCHER": "ccache"
+            }
+        },
+        {
+            "name": "native",
+            "displayName": "Native",
+            "description": "Build for the machine you are on",
+            "inherits": "base"
+        },
+        {
+            "name": "cross-x86_64",
+            "displayName": "Cross: x86-64",
+            "description": "Cross-build for x86-64 Linux; tests run under QEMU",
+            "inherits": "base",
+            "toolchainFile": "${sourceDir}/cmake/toolchain-x86_64-linux-gnu.cmake"
+        },
+        {
+            "name": "cross-aarch64",
+            "displayName": "Cross: aarch64",
+            "description": "Cross-build for aarch64 Linux (Pi 5); used by CI",
+            "inherits": "base",
+            "toolchainFile": "${sourceDir}/cmake/toolchain-aarch64-linux-gnu.cmake"
+        }
+    ],
+    "buildPresets": [
+        { "name": "native", "configurePreset": "native" },
+        { "name": "cross-x86_64", "configurePreset": "cross-x86_64" },
+        { "name": "cross-aarch64", "configurePreset": "cross-aarch64" }
+    ],
+    "testPresets": [
+        {
+            "name": "base",
+            "hidden": true,
+            "output": { "outputOnFailure": true }
+        },
+        { "name": "native", "configurePreset": "native", "inherits": "base" },
+        { "name": "cross-x86_64", "configurePreset": "cross-x86_64", "inherits": "base" },
+        { "name": "cross-aarch64", "configurePreset": "cross-aarch64", "inherits": "base" }
+    ]
+}
