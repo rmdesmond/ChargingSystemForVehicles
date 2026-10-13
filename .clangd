@@ -1,0 +1,3 @@
+# Tell clangd (the VS Code C++ language server) where compile_commands.json is.
+CompileFlags:
+    CompilationDatabase: build-native
