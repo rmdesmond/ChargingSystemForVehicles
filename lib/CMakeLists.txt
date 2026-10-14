@@ -2,7 +2,7 @@
 # and the unit tests link exactly the same object code.
 
 add_library(charger_core STATIC
-    src/Charger.cpp
+    src/StateMachine.cpp
 )
 add_library(charger::core ALIAS charger_core)
 

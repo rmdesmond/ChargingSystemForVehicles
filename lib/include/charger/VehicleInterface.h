@@ -11,14 +11,14 @@ class VehicleInterface {
 public:
     virtual ~VehicleInterface() = default;
 
-    // True while a connector is mated with the vehicle inlet.  
+    // True while a connector is mated with the vehicle inlet.
     virtual bool isPluggedIn() const = 0;
 
-    // Current the vehicle is asking for, in amperes. 
-    virtual double requestedCurrentInAmps() const = 0;
+    // Current the vehicle is asking for, in amperes.
+    virtual double requestedCurrentA() const = 0;
 
     // True when the vehicle has signalled that it is ready to accept energy.
     virtual bool isReady() const = 0;
 };
 
-} // namespace charger
+}  // namespace charger
