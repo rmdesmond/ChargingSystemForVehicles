@@ -31,12 +31,23 @@
             "description": "Cross-build for aarch64 Linux (Pi 5); used by CI",
             "inherits": "base",
             "toolchainFile": "${sourceDir}/cmake/toolchain-aarch64-linux-gnu.cmake"
+        },
+        {
+            "name": "coverage",
+            "displayName": "Coverage",
+            "description": "Native debug build instrumented for gcov; adds the 'coverage' target",
+            "inherits": "base",
+            "cacheVariables": {
+                "CMAKE_BUILD_TYPE": "Debug",
+                "ENABLE_COVERAGE": "ON"
+            }
         }
     ],
     "buildPresets": [
         { "name": "native", "configurePreset": "native" },
         { "name": "cross-x86_64", "configurePreset": "cross-x86_64" },
-        { "name": "cross-aarch64", "configurePreset": "cross-aarch64" }
+        { "name": "cross-aarch64", "configurePreset": "cross-aarch64" },
+        { "name": "coverage", "configurePreset": "coverage" }
     ],
     "testPresets": [
         {
@@ -46,6 +57,7 @@
         },
         { "name": "native", "configurePreset": "native", "inherits": "base" },
         { "name": "cross-x86_64", "configurePreset": "cross-x86_64", "inherits": "base" },
-        { "name": "cross-aarch64", "configurePreset": "cross-aarch64", "inherits": "base" }
+        { "name": "cross-aarch64", "configurePreset": "cross-aarch64", "inherits": "base" },
+        { "name": "coverage", "configurePreset": "coverage", "inherits": "base" }
     ]
 }

@@ -10,4 +10,4 @@ add_library(charger::core ALIAS charger_core)
 target_include_directories(charger_core PUBLIC include)
 
 # PRIVATE: applies to this library's own sources only.
-target_link_libraries(charger_core PRIVATE charger::warnings)
+target_link_libraries(charger_core PRIVATE charger::warnings charger::coverage)
