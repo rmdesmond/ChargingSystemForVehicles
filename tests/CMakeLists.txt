@@ -19,6 +19,7 @@ add_executable(charger_tests
 target_link_libraries(charger_tests PRIVATE
     charger::core
     charger::warnings
+    charger::coverage
     GTest::gmock_main # GoogleTest + GoogleMock + a ready-made main()
 )
 
@@ -27,3 +28,8 @@ target_link_libraries(charger_tests PRIVATE
 # CMAKE_CROSSCOMPILING_EMULATOR (set in the toolchain file).
 include(GoogleTest)
 gtest_discover_tests(charger_tests)
+
+# Run the daemon itself as a test. It proves the binary starts and exits
+# cleanly, on the foreign architecture too (CTest adds the emulator), and it
+# brings main.cpp into the coverage measurement.
+add_test(NAME daemon_smoke COMMAND charger-daemon)

@@ -30,6 +30,7 @@ endif()
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 include(GNUInstallDirs) # CMAKE_INSTALL_BINDIR and friends
 include(Warnings) # defines the charger::warnings target
+include(Coverage) # defines charger::coverage and the 'coverage' target
 
 option(CHARGER_BUILD_TESTS "Build the unit tests" ON)
 

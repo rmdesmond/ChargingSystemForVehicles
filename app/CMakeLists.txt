@@ -7,6 +7,7 @@ add_executable(charger-daemon
 target_link_libraries(charger-daemon PRIVATE
     charger::core
     charger::warnings
+    charger::coverage
 )
 
 # 'cmake --install' copies the binary to <prefix>/bin.
