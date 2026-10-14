@@ -23,4 +23,4 @@ public:
     TimePoint now() const override { return std::chrono::steady_clock::now(); }
 };
 
-} // namespace charger
+}  // namespace charger

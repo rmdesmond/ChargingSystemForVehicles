@@ -13,7 +13,7 @@ set(INSTALL_GTEST OFF CACHE BOOL "" FORCE)
 FetchContent_MakeAvailable(googletest)
 
 add_executable(charger_tests
-    test_charger.cpp
+    test_state_machine.cpp
 )
 
 target_link_libraries(charger_tests PRIVATE

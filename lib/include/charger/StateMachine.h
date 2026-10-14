@@ -25,7 +25,8 @@ public:
     static constexpr std::chrono::seconds kPreparingTimeout{60};
 
     // The referenced objects must outlive the state machine.
-    StateMachine(const VehicleInterface& vehicle, ContactorInterface& contactor, const Clock& clock);
+    StateMachine(const VehicleInterface& vehicle, ContactorInterface& contactor,
+                 const Clock& clock);
 
     // Apply one event. Returns true if it caused a transition, false if the
     // event is not valid in the current state and was ignored.
@@ -56,4 +57,4 @@ private:
     Clock::TimePoint enteredAt_;
 };
 
-} // namespace charger
+}  // namespace charger

@@ -19,4 +19,4 @@ public:
     // Feedback from the device: is it actually closed?
     virtual bool isClosed() const = 0;
 };
-} // namespace charger
+}  // namespace charger
