@@ -31,7 +31,8 @@ const StateMachine::Transition StateMachine::kTransitions[] = {
 };
 // clang-format on
 
-StateMachine::StateMachine(const VehicleInterface& vehicle, ContactorInterface& contactor, const Clock& clock)
+StateMachine::StateMachine(const VehicleInterface& vehicle, ContactorInterface& contactor,
+                           const Clock& clock)
     : vehicle_(vehicle), contactor_(contactor), clock_(clock), enteredAt_(clock.now()) {}
 
 bool StateMachine::handle(Event event) {
@@ -78,7 +79,7 @@ void StateMachine::enter(State next, Action action) {
 const char* toString(State state) {
     switch (state) {
         case State::Available:
-           return "Available";
+            return "Available";
         case State::Preparing:
             return "Preparing";
         case State::Charging:
@@ -113,4 +114,4 @@ const char* toString(Event event) {
     return "?";
 }
 
-} // namespace charger
+}  // namespace charger
