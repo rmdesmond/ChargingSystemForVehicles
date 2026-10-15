@@ -36,6 +36,8 @@ StateMachine::StateMachine(const VehicleInterface& vehicle, ContactorInterface& 
     : vehicle_(vehicle), contactor_(contactor), clock_(clock), enteredAt_(clock.now()) {}
 
 bool StateMachine::handle(Event event) {
+    // The loop acts on the row it finds, so std::any_of would hide a side effect.
+    // NOLINTNEXTLINE(readability-use-anyofallof)
     for (const Transition& t : kTransitions) {
         if (t.from == state_ && t.event == event) {
             enter(t.to, t.action);

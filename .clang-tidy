@@ -17,3 +17,34 @@ WarningsAsErrors: '*'
 HeaderFilterRegex: '(lib|app)/.*'
 FormatStyle: file
 ...
+
+---
+# Static analysis policy for the product code (lib/ and app/).
+#
+# Check groups: bugprone, cert, performance, readability.
+# Every finding is an error: the 'tidy' target fails and CI blocks the merge.
+#
+# Checks disabled for the whole project, each with its reason:
+# readability-magic-numbers noisy in protocol tables; revisit with CAN/Modbus
+# readability-identifier-length short loop and lambda names are fine
+# bugprone-easily-swappable-parameters flags most two-argument functions
+#
+# A single finding that is wrong for one line is suppressed on that line, never
+# here, with the reason in a comment directly above:
+# // <why this code is right>
+# // NOLINTNEXTLINE(check-name)
+# Current line suppressions (keep this list in step with the code):
+# lib/src/StateMachine.cpp readability-use-anyofallof lookup loop has a side effect
+Checks: >
+-*,
+bugprone-*,
+cert-*,
+performance-*,
+readability-*,
+-readability-magic-numbers,
+-readability-identifier-length,
+-bugprone-easily-swappable-parameters
+WarningsAsErrors: '*'
+HeaderFilterRegex: '(lib|app)/.*'
+FormatStyle: file
+...
