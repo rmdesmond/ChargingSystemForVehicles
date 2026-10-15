@@ -31,6 +31,7 @@ list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 include(GNUInstallDirs) # CMAKE_INSTALL_BINDIR and friends
 include(Warnings) # defines the charger::warnings target
 include(Coverage) # defines charger::coverage and the 'coverage' target
+include(Tidy)     # defines charger_add_tidy_target()
 
 option(CHARGER_BUILD_TESTS "Build the unit tests" ON)
 
@@ -41,3 +42,6 @@ if(CHARGER_BUILD_TESTS)
     enable_testing()    # must be in the root file so ctest finds the tests
     add_subdirectory(tests)
 endif()
+
+# Static analysis covers what ships: the library and the daemon, not the tests.
+charger_add_tidy_target(charger_core charger-daemon)

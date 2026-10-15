@@ -47,6 +47,25 @@ host) or `cross-aarch64` (from an x86-64 host); the unit tests then run under
 QEMU user-mode emulation. `scripts/verify.sh` does all of it from a clean
 clone.
 
+## Development
+
+Enable the pre-commit format check once per clone:
+
+```sh
+git config core.hooksPath .githooks
+```
+
+| Task | Command |
+|------------------------------|------------------------------------------------|
+| Format the code | `scripts/format.sh` |
+| Static analysis | `cmake --build --preset native --target tidy` |
+| Tests with coverage report | `scripts/ci.sh test` |
+| All CI steps, on this host | `scripts/ci.sh all` |
+| All CI steps, in CI's image | `scripts/build-in-docker.sh scripts/ci.sh all` |
+
+CI runs `scripts/ci.sh` inside the image built from `docker/Dockerfile`, so a
+failure on a pull request can be reproduced locally with the last command.
+
 ## Architecture
 
 ```mermaid

@@ -1,6 +1,7 @@
 #pragma once
 
 #include <chrono>
+#include <cstdint>
 
 #include "charger/Clock.h"
 #include "charger/ContactorInterface.h"
@@ -8,9 +9,10 @@
 
 namespace charger {
 
-// Must match the tables in docs/design.md.
-enum class State { Available, Preparing, Charging, SuspendedEV, Finishing, Faulted };
-enum class Event { PlugIn, Authorize, EvReady, EvSuspend, Unplug, Fault, Clear };
+// Must match the tables in docs/design.md. One byte each: these values end up
+// in log records and, later, in protocol frames.
+enum class State : std::uint8_t { Available, Preparing, Charging, SuspendedEV, Finishing, Faulted };
+enum class Event : std::uint8_t { PlugIn, Authorize, EvReady, EvSuspend, Unplug, Fault, Clear };
 
 const char* toString(State state);
 const char* toString(Event event);
@@ -39,7 +41,7 @@ public:
     State state() const { return state_; }
 
 private:
-    enum class Action { None, CloseContactor, OpenContactor };
+    enum class Action : std::uint8_t { None, CloseContactor, OpenContactor };
     struct Transition {
         State from;
         Event event;

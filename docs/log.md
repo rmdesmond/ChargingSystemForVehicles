@@ -35,3 +35,5 @@ Also, ordered parts for this exploration (CAN related hardware and some microcon
       lines......: 95.6% (87 of 91 lines)
       functions......: 76.2% (16 of 21 functions)
       branches......: 86.7% (39 of 45 branches)
+   clang-tidy target,  
+   clang-format scripts + pre-commit hook.

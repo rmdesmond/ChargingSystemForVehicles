@@ -1,0 +1,6 @@
+#!/usr/bin/env bash
+# Runs before every commit once enabled with:
+# git config core.hooksPath .githooks
+# A hook is a convenience for the developer, not a control: it can be skipped
+# with 'git commit --no-verify'. The control is the same check in CI.
+exec "$(git rev-parse --show-toplevel)/scripts/check-format.sh"
