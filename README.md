@@ -1,5 +1,8 @@
 # ChargingSystemForVehicles
 
+[![ci](https://github.com/rmdesmond/ChargingSystemForVehicles/actions/workflows/ci.yml/badge.svg)]
+(https://github.com/rmdesmond/ChargingSystemForVehicles/actions/workflows/ci.yml)
+
 A small EV charge controller built end to end: a C++17 daemon for embedded
 Linux on a Raspberry Pi 5 that runs the charging state machine, plus the
 pipeline that builds, tests, signs and ships it. The daemon is deliberately
@@ -9,6 +12,11 @@ level, signed over-the-air updates with rollback, and a documented safety
 concept.
 
 ## Pipeline
+
+Target: under 10 minutes per pull request. Status today: build, lint and unit
+tests with coverage run on every pull request and block the merge; the other
+stages arrive one at a time. Measurements are in
+[docs/ci-metrics.md](docs/ci-metrics.md).
 
 Every change reaches `main` through a pull request that must pass the first
 five stages. The last two run only when a version tag is pushed.
