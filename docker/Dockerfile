@@ -10,9 +10,9 @@
 # newer one, this build FAILS instead of silently changing the toolchain.
 # That failure is the signal to review and bump the pins on purpose.
 #
-# Get the digest: docker pull ubuntu:24.04 (prints "Digest: sha256:...")
-# Get a version: docker run --rm ubuntu:24.04 sh -c \
-# 'apt-get update -qq && apt-cache policy cmake'
+# Get the digest:   docker pull ubuntu:24.04 (prints "Digest: sha256:...")
+# Get a version:    docker run --rm ubuntu:24.04 sh -c \
+#                       'apt-get update -qq && apt-cache policy cmake'
 FROM ubuntu:24.04@sha256:534baea6a22c03a63003dbc8dbe78fe34bc0d7e595d9a9dc9834884ff530eb55
 
 # Stop apt from asking questions during the build only (ARG, not ENV, so it

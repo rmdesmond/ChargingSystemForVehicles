@@ -1,0 +1,80 @@
+# The pull-request pipeline. Three jobs run in parallel; branch protection on
+# main requires all three by name: build, lint, test.
+#
+# Each job does the same four things: check out, restore the compiler cache,
+# build the pinned image, run one step of scripts/ci.sh inside it. The logic
+# lives in that script, not here, so it can be run and debugged locally.
+name: ci
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+# A new push to the same branch cancels the run that is still in progress.
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+# The workflow token can read the repository and nothing else.
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - name: Restore compiler cache
+        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        with:
+          path: ~/.cache/charger-ccache
+          # A cache entry is immutable, so each commit saves its own (the sha
+          # suffix) and starts from the newest one for the same toolchain.
+          key: ccache-build-${{ hashFiles('docker/Dockerfile') }}-${{ github.sha }}
+          restore-keys: |
+            ccache-build-${{ hashFiles('docker/Dockerfile') }}-
+      - name: Build native and cross, run cross tests under QEMU
+        run: scripts/build-in-docker.sh scripts/ci.sh build
+
+  lint:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - name: clang-format check and clang-tidy
+        run: scripts/build-in-docker.sh scripts/ci.sh lint
+
+  test:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - name: Restore compiler cache
+        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        with:
+          path: ~/.cache/charger-ccache
+          # A cache entry is immutable, so each commit saves its own (the sha
+          # suffix) and starts from the newest one for the same toolchain.
+          key: ccache-test-${{ hashFiles('docker/Dockerfile') }}-${{ github.sha }}
+          restore-keys: |
+            ccache-test-${{ hashFiles('docker/Dockerfile') }}-
+      - name: Unit tests with coverage
+        run: scripts/build-in-docker.sh scripts/ci.sh test
+      - name: Publish the coverage numbers on the run page
+        if: always()
+        run: |
+          {
+            echo '### Coverage'
+            echo '```'
+            cat build-coverage/coverage/summary.txt || echo 'no coverage data (did the tests fail?)'
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"
+      - name: Upload the HTML coverage report
+        if: always()
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: coverage-html
+          path: build-coverage/coverage/html
+          if-no-files-found: warn
