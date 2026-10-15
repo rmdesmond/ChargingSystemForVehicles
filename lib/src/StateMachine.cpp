@@ -49,7 +49,7 @@ bool StateMachine::handle(Event event) {
 
 void StateMachine::tick() {
     // REQ-006: nobody authorized within the timeout; give the connector back.
-    if (state_ == State::Preparing && clock_.now() - enteredAt_ >= kPreparingTimeout) {
+    if (state_ == State::Preparing && clock_.now() - enteredAt_ > kPreparingTimeout) {
         enter(State::Available, Action::None);
     }
 }
