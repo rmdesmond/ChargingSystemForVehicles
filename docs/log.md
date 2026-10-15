@@ -37,3 +37,8 @@ Also, ordered parts for this exploration (CAN related hardware and some microcon
       branches......: 86.7% (39 of 45 branches)
    clang-tidy target,  
    clang-format scripts + pre-commit hook.
+
+10/15/26 - Docker, CI pipeline taking shape.
+  'time scripts/build-in-docker.sh scripts/ci.sh all' yielded:
+   3m30 real on a clean run (rm -rf build-native build-cross-* build-coverage)
+   0m5 on a subsequent, cached, run
