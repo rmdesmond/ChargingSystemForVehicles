@@ -2,8 +2,10 @@
 # and the unit tests link exactly the same object code.
 
 add_library(charger_core STATIC
+    src/ServiceNotifier.cpp
     src/StateMachine.cpp
 )
+
 add_library(charger::core ALIAS charger_core)
 
 # PUBLIC: needed to build this library AND by anything that links to it.

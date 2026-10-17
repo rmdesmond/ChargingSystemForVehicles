@@ -53,7 +53,8 @@
         {
             "name": "base",
             "hidden": true,
-            "output": { "outputOnFailure": true }
+            "output": { "outputOnFailure": true },
+            "execution": { "timeout": 60 }
         },
         { "name": "native", "configurePreset": "native", "inherits": "base" },
         { "name": "cross-x86_64", "configurePreset": "cross-x86_64", "inherits": "base" },

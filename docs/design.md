@@ -65,6 +65,15 @@ other 25 are ignored: the state does not change and the contactor is not touched
 - **REQ-006** If Preparing lasts 60 s without authorization, the controller shall return to Available.
 - **REQ-007** The contactor shall not be commanded closed unless the vehicle interface reports plugged in and ready; otherwise the controller shall open the contactor and enter Faulted.
 
+## Running as a service
+
+The daemon is started by systemd. These requirements describe how the two
+cooperate; REQ-010 is met by the unit file, not by code.
+
+- **REQ-008** The daemon shall report readiness once start-up is complete, and shall report liveness from its main loop at intervals of at most half the watchdog timeout it was given.
+- **REQ-009** On SIGTERM the daemon shall leave its main loop within one loop period (1 s) and exit with status 0.
+- **REQ-010** If the daemon reports no liveness for 10 s, or exits with a failure, the service manager shall restart it.
+
 ## Diagram
 
 ```mermaid
