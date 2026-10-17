@@ -91,7 +91,7 @@ TEST(ServiceNotifierTest, SendsToAnAbstractSocket) {
     const int fd = ::socket(AF_UNIX, SOCK_DGRAM | SOCK_CLOEXEC, 0);
     sockaddr_un address{};
     address.sun_family = AF_UNIX;
-    std::memcpy(address.sun_path + 1, name.data(), name.size()); // sun_path[0] stays 0
+    std::memcpy(address.sun_path + 1, name.data(), name.size());  // sun_path[0] stays 0
     const auto length = static_cast<socklen_t>(offsetof(sockaddr_un, sun_path) + 1 + name.size());
     ASSERT_EQ(::bind(fd, reinterpret_cast<const sockaddr*>(&address), length), 0);
 
@@ -128,4 +128,4 @@ TEST(ServiceNotifierTest, RejectsAPathTooLongForASocketAddress) {
     EXPECT_FALSE(notifier.ready());
 }
 
-} // namespace
+}  // namespace

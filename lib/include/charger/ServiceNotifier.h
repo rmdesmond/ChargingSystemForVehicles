@@ -29,9 +29,9 @@ public:
     std::chrono::microseconds watchdogTimeout() const { return watchdogTimeout_; }
 
     // Each returns true if the message was delivered.
-    bool ready(); // start-up is complete (READY=1)
-    bool watchdog(); // the main loop is alive (WATCHDOG=1)
-    bool stopping(); // shutdown has begun (STOPPING=1)
+    bool ready();     // start-up is complete (READY=1)
+    bool watchdog();  // the main loop is alive (WATCHDOG=1)
+    bool stopping();  // shutdown has begun (STOPPING=1)
 private:
     bool send(std::string_view message) const;
 

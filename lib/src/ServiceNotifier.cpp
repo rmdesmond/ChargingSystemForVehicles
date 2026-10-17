@@ -47,7 +47,8 @@ bool ServiceNotifier::send(std::string_view message) const {
     if (address.sun_path[0] == '@') {
         address.sun_path[0] = '\0';
     }
-    const auto addressLength = static_cast<socklen_t>(offsetof(sockaddr_un, sun_path) + socketPath_.size());
+    const auto addressLength =
+        static_cast<socklen_t>(offsetof(sockaddr_un, sun_path) + socketPath_.size());
 
     // A datagram socket: one send() is one complete message, no connection.
     const int fd = ::socket(AF_UNIX, SOCK_DGRAM | SOCK_CLOEXEC, 0);
@@ -56,7 +57,8 @@ bool ServiceNotifier::send(std::string_view message) const {
     }
     // sendto() takes the generic sockaddr type; this cast is how the API is used.
     const auto* genericAddress = reinterpret_cast<const sockaddr*>(&address);
-    const ssize_t sent = ::sendto(fd, message.data(), message.size(), MSG_NOSIGNAL, genericAddress, addressLength);
+    const ssize_t sent =
+        ::sendto(fd, message.data(), message.size(), MSG_NOSIGNAL, genericAddress, addressLength);
     ::close(fd);
     return sent == static_cast<ssize_t>(message.size());
 }
