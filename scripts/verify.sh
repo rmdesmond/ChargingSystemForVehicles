@@ -30,6 +30,6 @@ for preset in native "$cross"; do
 done
 
 echo "== smoke-run the $cross daemon under QEMU"
-"$qemu" -L "/usr/$triple" "build-$cross/app/charger-daemon"
+"$qemu" -L "/usr/$triple" "build-$cross/app/charger-daemon" --demo
 
 echo "== OK: native and $cross built and tested from a clean clone in $(( $(date +%s) - start )) s"
