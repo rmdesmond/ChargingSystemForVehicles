@@ -52,4 +52,22 @@
    - Proved CI worked on GitHub to prevent a bad branch from merging via
      - .github/workflows/ci.yml
      - .githooks/pre-commit
-     
+
+**10/16/26 - Bringing up hardware**
+Diagnosed an SD card failure after configuring the serial port
+and the Raspberry Pi incessantly cycled on a file system check and never
+recovered and never booted. Power supply looked fine. The SD card is a
+generic brand; we'll get a quality brand and try again on Monday.
+
+**10/19/26 - Bringing up hardware, Running initial daemon on hardware**
+SD card verdict: It wasn't the power supply. It wasn't the
+configuration and updates applied to the Pi.  Replaced the SD
+card with one from a quality manufacturer and all is well.
+
+Proved the daemon ran on the target Raspberry Pi and would restart
+when it died. Tested with forced kills (sudo kill -STOP/-SEGV charger-daemon)
+and a clean stop (systemctl stop charger-daemon) and verified restarts via 
+(systemctl show -p NRestarts -p Result charger-daemon).
+
+Also measured security: systemd-analyze security charger-daemon
+Rating: 8.5 EXPOSED, as expected at this point
