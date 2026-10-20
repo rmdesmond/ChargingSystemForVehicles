@@ -1,0 +1,36 @@
+# systemd unit for the charge controller daemon.
+# Installed to /etc/systemd/system/ by scripts/deploy.sh.
+
+[Unit]
+Description=EV charge controller daemon
+# No ordering or network dependencies yet: today the daemon talks to nothing.
+# The OCPP client in week 3 will add what it needs, and no more.
+
+[Service]
+# notify: the service counts as started only when the daemon sends READY=1,
+# not merely when the process exists.
+Type=notify
+ExecStart=/opt/charger/bin/charger-daemon
+
+# An unprivileged account that owns nothing. Created by scripts/deploy.sh.
+User=charger
+
+# REQ-010. The daemon must send WATCHDOG=1 at least every 10 s (it sends every
+# 5 s). If it stops, systemd aborts it, and that counts as a failure.
+WatchdogSec=10
+# Restart after a crash, a watchdog timeout or a non-zero exit, but not when
+# the daemon exits cleanly with status 0.
+Restart=on-failure
+RestartSec=2
+
+# Hardening: remove what the daemon does not need.
+# The whole filesystem is read-only for this service.
+ProtectSystem=strict
+# It can never gain privileges, even through a setuid program.
+NoNewPrivileges=yes
+# It gets a private, empty /tmp.
+PrivateTmp=yes
+
+[Install]
+# Start at boot as part of the normal multi-user system.
+WantedBy=multi-user.target

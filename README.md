@@ -89,6 +89,25 @@ flowchart TB
     sil -.->|"drives the real daemon binary"| daemon
 ```
 
+## Hardware
+
+(WAITING ON HARDWARE TO ARRIVE TTL-to-Serial Cable)
+Raspberry Pi Serial Port - for checking boot and if no network address
+
+| Item            | Value                                                      |
+|-----------------|------------------------------------------------------------|
+| Target          | Raspberry Pi 5, Raspberry Pi OS Lite 64-bit (Debian 13)    |
+| Hostname / IP   | `charger` / `<address, reserved in the router>`            |
+| Login           | `<user>`, SSH key only                                     |
+| Serial console  | 115200 8N1, 3.3 V logic                                    |
+| Serial wiring   | GPIO 14 TX (pin 8), GPIO 15 RX (pin 10), GND (pin 6)       |
+| Console enabled | `enable_uart=1` in `/boot/firmware/config.txt`             |
+| Service         | `charger-daemon.service`, user `charger`, watchdog 10 s    |
+
+Deploy from the aarch64 development VM with `scripts/deploy.sh`. This is a
+development loop only: nothing is signed and there is no rollback. Releases
+and over-the-air updates replace it in week 2.
+
 ## Testing
 
 Unit tests today; SIL and HIL to follow. See [docs/testing.md](docs/testing.md).
