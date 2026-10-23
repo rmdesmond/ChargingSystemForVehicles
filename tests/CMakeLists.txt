@@ -13,6 +13,8 @@ set(INSTALL_GTEST OFF CACHE BOOL "" FORCE)
 FetchContent_MakeAvailable(googletest)
 
 add_executable(charger_tests
+    test_line_protocol.cpp
+    test_line_server.cpp
     test_service_notifier.cpp
     test_state_machine.cpp
 )
