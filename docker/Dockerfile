@@ -26,7 +26,7 @@ ARG DEBIAN_FRONTEND=noninteractive
 RUN apt-get update \
   && apt-get install -y \
         build-essential=12.10ubuntu1 \
-        ca-certificates=20260601~24.04.1 \
+        ca-certificates=20260816ubuntu0.24.04.1 \
         ccache=4.9.1-1 \
         clang-format=1:18.0-59~exp2 \
         clang-tidy=1:18.0-59~exp2 \
