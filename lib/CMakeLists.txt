@@ -2,7 +2,10 @@
 # and the unit tests link exactly the same object code.
 
 add_library(charger_core STATIC
+    src/LineProtocol.cpp
+    src/LineServer.cpp
     src/ServiceNotifier.cpp
+    src/SocketVehicle.cpp
     src/StateMachine.cpp
 )
 

@@ -74,6 +74,54 @@ cooperate; REQ-010 is met by the unit file, not by code.
 - **REQ-009** On SIGTERM the daemon shall leave its main loop within one loop period (1 s) and exit with status 0.
 - **REQ-010** If the daemon reports no liveness for 10 s, or exits with a failure, the service manager shall restart it.
 
+## Contactor feedback
+
+The contactor interface reports whether the device is actually closed. From
+Week 2 the controller uses that report; in Week 4 the report comes from the
+safety MCU.
+
+- **REQ-011** After commanding the contactor closed, if the contactor does
+  not report closed, the controller shall command it open and enter Faulted.
+
+## Harness control sockets
+
+The daemon has no vehicle hardware until Week 4. Until then (and in CI for
+ever after) the vehicle, and the operator, are played by a test harness over
+two unix sockets. The vehicle socket is a command channel; the status socket
+is a read-only observation channel that anything on the device may use (an
+operator with `nc`, a health check, a HIL runner).
+
+- **REQ-012** When started with `--vehicle-socket PATH`, the daemon shall
+  accept newline-delimited commands on that socket, apply them in order, and
+  answer every line with `STATE <state>` or `ERR <reason>`. Malformed or
+  unknown lines shall change nothing.
+- **REQ-013** When started with `--status-socket PATH`, the daemon shall
+  write `STATE <state>` to every connection on that socket and close it.
+
+### Vehicle socket protocol
+
+One command per line, upper case, terminated by `\n` (a trailing `\r` is
+ignored). The reply to every line is one line.
+
+| Command         | Effect on the vehicle interface      | Event raised | Reply           | 
+|-----------------|--------------------------------------|--------------|-----------------|
+| `PLUG`          | plugged in = true                    | PlugIn       | `STATE <state>` |
+| `UNPLUG`        | plugged in = false, ready = false    | Unplug       | `STATE <state>` |
+| `AUTH`          | -                                    | Authorize    | `STATE <state>` |
+| `READY`         | ready = true                         | EvReady      | `STATE <state>` |
+| `SUSPEND`       | ready = false                        | EvSuspend    | `STATE <state>` |
+| `FAULT`         | -                                    | Fault        | `STATE <state>` |
+| `CLEAR`         | -                                    | Clear        | `STATE <state>` |
+| `CURRENT <A>`   | requested current = A (0 to 80)      | -            | `STATE <state>` |
+| `STATE`         | -                                    | -            | `STATE <state>` |
+| anything else   | -                                    | -            | `ERR <reason>`  |
+
+`AUTH` and `CLEAR` are not things a vehicle does; they are the operator (a
+card, a backend, a technician). The socket is the harness's channel to the
+whole outside world, which is why it survives the Week 4 `--mcu` mode: plug
+and ready sensing move to the MCU, `AUTH`, `CLEAR` and `STATE` stay here.
+See `docs/adr/0003-harness-control-sockets.md`.
+
 ## Diagram
 
 ```mermaid

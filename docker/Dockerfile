@@ -26,14 +26,14 @@ ARG DEBIAN_FRONTEND=noninteractive
 RUN apt-get update \
   && apt-get install -y \
         build-essential=12.10ubuntu1 \
-        ca-certificates=20260601~24.04.1 \
+        ca-certificates=20260816ubuntu0.24.04.1 \
         ccache=4.9.1-1 \
         clang-format=1:18.0-59~exp2 \
         clang-tidy=1:18.0-59~exp2 \
         cmake=3.28.3-1build7 \
         g++-aarch64-linux-gnu=4:13.2.0-7ubuntu1 \
         g++-x86-64-linux-gnu=4:13.2.0-7ubuntu1 \
-        git=1:2.43.0-1ubuntu7.3 \
+        git=1:2.43.0-1ubuntu7.4 \
         lcov=2.0-4ubuntu2 \
         libjson-xs-perl=4.040-0ubuntu0.24.04.1 \
         ninja-build=1.11.1-2 \

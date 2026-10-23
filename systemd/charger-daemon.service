@@ -10,8 +10,13 @@ Description=EV charge controller daemon
 # notify: the service counts as started only when the daemon sends READY=1,
 # not merely when the process exists.
 Type=notify
-ExecStart=/opt/charger/bin/charger-daemon
-
+# The status socket is read-only (REQ-013): anyone on the device can ask the
+# state with 'nc -U /run/charger/status.sock'. The vehicle socket is the test
+# harness's command channel and is never enabled here (ADR 0003).
+ExecStart=/opt/charger/bin/charger-daemon --status-socket /run/charger/status.sock
+# systemd creates /run/charger owned by User= and removes it when the service
+# stops. It is the one writable place under ProtectSystem=strict.
+RuntimeDirectory=charger
 # An unprivileged account that owns nothing. Created by scripts/deploy.sh.
 User=charger
 
