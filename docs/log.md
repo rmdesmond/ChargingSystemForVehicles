@@ -73,4 +73,5 @@ Also measured security: systemd-analyze security charger-daemon
 Rating: 8.5 EXPOSED, as expected at this point
 
 **10/22/26 - Vehicle socket & status socked added, SIL introduced**
-Updated design.md with the vehicle socket protocol.
+Updated design.md with the vehicle socket protocol. Python based SIL
+implemented.

@@ -35,11 +35,24 @@ ci_test() {
     cmake --build --preset coverage --target coverage
 }
 
+# The SIL suite needs the native daemon and the pinned pytest. The venv is
+# created on first use; CHARGER_PYTEST overrides it (CI installs its own).
+ci_sil() {
+    cmake --preset native
+    cmake --build --preset native --target charger-daemon
+    local pytest="${CHARGER_PYTEST:-.venv/bin/pytest}"
+    if [ ! -x "$pytest" ]; then
+        python3 -m venv .venv
+        .venv/bin/pip install --quiet --requirement requirements-test.txt
+    fi
+    "$pytest" --quiet tests/sil
+}
 
 case "${1:-}" in
     build) ci_build ;;
     lint) ci_lint ;;
     test) ci_test ;;
-    all) ci_build; ci_lint; ci_test ;;
+    sil) ci_sil ;;
+    all) ci_build; ci_lint; ci_test; ci_sil ;;
     *) sed -n '2,9p' "$0" | sed 's/^# \{0,1\}//'; exit 2 ;;
 esac
