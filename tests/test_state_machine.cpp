@@ -98,9 +98,11 @@ std::string rowName(const ::testing::TestParamInfo<Row>& info) {
 class StateMachineTest : public ::testing::Test {
 protected:
     StateMachineTest() {
-        // Default answers: a vehicle that is plugged in and ready.
+        // Default answers: a vehicle that is plugged in and ready, and a
+        // contactor that reports closed (REQ-011 asks it after every close).
         ON_CALL(vehicle_, isPluggedIn()).WillByDefault(Return(true));
         ON_CALL(vehicle_, isReady()).WillByDefault(Return(true));
+        ON_CALL(contactor_, isClosed()).WillByDefault(Return(true));
     }
 
     // Reach a state the same way the product does: through events. There is no
@@ -259,6 +261,58 @@ TEST_F(StateMachineTest, TimeoutAppliesOnlyToPreparing) {
     clock_.advance(24h);
     machine_.tick();
     EXPECT_EQ(machine_.state(), State::SuspendedEV);
+}
+
+// REQ-011: the contactor is asked whether it really closed. A device that
+// does not report closed is commanded open, and the session is over.
+TEST_F(StateMachineTest, FaultsWhenTheContactorDoesNotReportClosed) {
+    driveTo(State::SuspendedEV);
+    ON_CALL(contactor_, isClosed()).WillByDefault(Return(false));
+    {
+        InSequence inOrder;
+        EXPECT_CALL(contactor_, close()).Times(1);
+        EXPECT_CALL(contactor_, open()).Times(1);
+    }
+    machine_.handle(Event::EvReady);
+    EXPECT_EQ(machine_.state(), State::Faulted);
+}
+
+TEST_F(StateMachineTest, ChecksTheContactorOnlyAfterCommandingItClosed) {
+    // A device that reports open is normal everywhere except just after close().
+    ON_CALL(contactor_, isClosed()).WillByDefault(Return(false));
+    driveTo(State::SuspendedEV);
+    EXPECT_EQ(machine_.state(), State::SuspendedEV);
+    machine_.handle(Event::Unplug);
+    EXPECT_EQ(machine_.state(), State::Available);
+}
+
+// ScaledClock: what --time-scale does to the state machine's view of time.
+// ---------------------------------------------------------------------------
+TEST(ScaledClockTest, RunsFasterThanItsBaseByTheScale) {
+    FakeClock base;
+    const charger::ScaledClock scaled(base, 20.0);
+    const auto origin = scaled.now();
+    base.advance(3s);
+    EXPECT_EQ(scaled.now() - origin, 60s);
+}
+
+TEST(ScaledClockTest, AtScaleOneItIsItsBase) {
+    FakeClock base;
+    const charger::ScaledClock scaled(base, 1.0);
+    base.advance(1500ms);
+    EXPECT_EQ(scaled.now(), base.now());
+}
+
+TEST_F(StateMachineTest, PreparingTimesOutInThreeSecondsAtScaleTwenty) {
+    const charger::ScaledClock fast(clock_, 20.0);
+    StateMachine machine(vehicle_, contactor_, fast);
+    machine.handle(Event::PlugIn);
+    clock_.advance(3s - 1ms);
+    machine.tick();
+    EXPECT_EQ(machine.state(), State::Preparing);
+    clock_.advance(1ms);
+    machine.tick();
+    EXPECT_EQ(machine.state(), State::Available);
 }
 
 }  // namespace
