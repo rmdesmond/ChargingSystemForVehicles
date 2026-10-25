@@ -82,3 +82,4 @@ format: OK
   lines......: 89.6% (389 of 434 lines)
   branches......: 72.0% (208 of 289 branches)
 9 passed in 3.27s`
+CI build timings for build, lint, and test are 1m35s, 1m20s, and 1m28s, respectively.
