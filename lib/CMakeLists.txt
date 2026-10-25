@@ -5,6 +5,7 @@ add_library(charger_core STATIC
     src/LineProtocol.cpp
     src/LineServer.cpp
     src/ServiceNotifier.cpp
+    src/SimContactor.cpp
     src/SocketVehicle.cpp
     src/StateMachine.cpp
 )

@@ -16,7 +16,7 @@
 #include "charger/LineProtocol.h"
 #include "charger/LineServer.h"
 #include "charger/ServiceNotifier.h"
-// #include "charger/SimContactor.h"
+#include "charger/SimContactor.h"
 #include "charger/SocketVehicle.h"
 #include "charger/StateMachine.h"
 
@@ -31,24 +31,6 @@ public:
     double requestedCurrentA() const override { return 16.0; }
     bool isReady() const override { return true; }
 };
-
-// REMOVE EVENTUALLY
-class LoggingContactor final : public charger::ContactorInterface {
-public:
-    void close() override {
-        closed_ = true;
-        std::cerr << " contactor: CLOSED\n";
-    }
-    void open() override {
-        closed_ = false;
-        std::cerr << " contactor: OPEN\n";
-    }
-    bool isClosed() const override { return closed_; }
-
-private:
-    bool closed_{false};
-};
-// END REMOVE
 
 // Everything the command line can set. Parsed once in main().
 struct Options {
@@ -271,25 +253,17 @@ int main(int argc, char** argv) {
     const charger::VehicleInterface& vehicle =
         options->vehicleSocket.empty() ? static_cast<const charger::VehicleInterface&>(stubVehicle)
                                        : socketVehicle;
-    // WILL USE EVENTUALLY
+
     //  The contactor: simulated until week 4. Under --sim it can be made to
     //  fail from the environment, which is how the SIL suite injects faults.
-    //    const char* simContactor = options->sim ? std::getenv("CHARGER_SIM_CONTACTOR") : nullptr;
-    //    charger::SimContactor contactor(simContactor != nullptr &&
-    //                                    std::string_view{simContactor} == "stuck");
-    // TEMP
-    LoggingContactor contactor;
-    // END TEMP
+    const char* simContactor = options->sim ? std::getenv("CHARGER_SIM_CONTACTOR") : nullptr;
+    charger::SimContactor contactor(simContactor != nullptr &&
+                                    std::string_view{simContactor} == "stuck");
 
-    // WILL USE EVENTUALLY
-    //    const charger::SystemClock systemClock;
-    //    const charger::ScaledClock scaledClock(systemClock, options->timeScale);
-    //    const charger::Clock& clock =
-    //        options->timeScale == 1.0 ? static_cast<const charger::Clock&>(systemClock) :
-    //        scaledClock;
-    // TMP
-    const charger::SystemClock clock;
-    // END TEMP
+    const charger::SystemClock systemClock;
+    const charger::ScaledClock scaledClock(systemClock, options->timeScale);
+    const charger::Clock& clock =
+        options->timeScale == 1.0 ? static_cast<const charger::Clock&>(systemClock) : scaledClock;
     charger::StateMachine machine(vehicle, contactor, clock);
     if (options->timeScale != 1.0) {
         std::cerr << "charger-daemon: time scale " << options->timeScale << " (test only)\n";

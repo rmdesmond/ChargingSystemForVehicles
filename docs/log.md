@@ -72,6 +72,13 @@ and a clean stop (systemctl stop charger-daemon) and verified restarts via
 Also measured security: systemd-analyze security charger-daemon
 Rating: 8.5 EXPOSED, as expected at this point
 
-**10/22/26 - Vehicle socket & status socked added, SIL introduced**
+**10/22/26 through 10/25/26** - Vehicle socket & status socked added, SIL introduced**
 Updated design.md with the vehicle socket protocol. Python based SIL
 implemented.
+`scripts/ci.sh all 2>&1 | grep -E 'tests passed|lines\.|branches\.|format:|passed in'
+100% tests passed, 0 tests failed out of 105
+format: OK
+100% tests passed, 0 tests failed out of 106
+  lines......: 89.6% (389 of 434 lines)
+  branches......: 72.0% (208 of 289 branches)
+9 passed in 3.27s`

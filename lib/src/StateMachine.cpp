@@ -65,6 +65,13 @@ void StateMachine::enter(State next, Action action) {
                 contactor_.open();
                 next = State::Faulted;
             }
+            // REQ-011: a command is not a fact. If the device does not report
+            // closed, the cable may or may not be live; the safe answer is
+            // to command it open and stop the session.
+            if (next == State::Charging && !contactor_.isClosed()) {
+                contactor_.open();
+                next = State::Faulted;
+            }
             break;
         case Action::OpenContactor:
             contactor_.open();
