@@ -78,3 +78,29 @@ jobs:
           name: coverage-html
           path: build-coverage/coverage/html
           if-no-files-found: warn
+
+  # Software-in-the-loop: the native daemon, built here from the compiler
+  # cache, driven by the pytest harness. Independent of the build job on
+  # purpose: a job that rebuilds in seconds has no artifact to hand over and
+  # nothing to wait for (ADR 0004).
+  sil:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - name: Restore compiler cache
+        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        with:
+          path: ~/.cache/charger-ccache
+          key: ccache-sil-${{ hashFiles('docker/Dockerfile') }}-${{ github.sha }}
+          restore-keys: |
+            ccache-sil-${{ hashFiles('docker/Dockerfile') }}-
+      - name: SIL suite against the native daemon
+        run: scripts/build-in-docker.sh scripts/ci.sh sil
+      - name: Keep the junit report (it carries the daemon log of any failure)
+        if: always()
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: sil-junit
+          path: build-sil/junit.xml
+          if-no-files-found: warn

@@ -1,5 +1,8 @@
 # Python packages for the SIL suite (tests/sil). Pinned, like the build image:
 # a new release must not change what the pipeline does without a review.
-# Looked up 2026-10-16; install into a venv: python3 -m venv .venv &&
+# Looked up 2026-10-16 (pytest) and 2026-10-25 (pyflakes); install into a venv: python3 -m venv .venv &&
 # .venv/bin/pip install -r requirements-test.txt
 pytest==9.1.1
+# Static check for the Python side of the harness (undefined names, unused
+# imports, wrong arity); runs in 'scripts/ci.sh lint'.
+pyflakes==4.0.3
