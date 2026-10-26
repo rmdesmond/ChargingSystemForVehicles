@@ -23,6 +23,8 @@ ARG DEBIAN_FRONTEND=noninteractive
 # Both cross compilers are listed: on each architecture one of them is simply
 # the native compiler under its full name, so the same list works on the
 # aarch64 VM and on x86-64 CI runners.
+# python3 itself arrives as a dependency of clang-tidy; python3-venv is what
+# 'python3 -m venv' needs, so the SIL suite's pinned pytest can be installed.
 RUN apt-get update \
   && apt-get install -y \
         build-essential=12.10ubuntu1 \
@@ -37,6 +39,7 @@ RUN apt-get update \
         lcov=2.0-4ubuntu2 \
         libjson-xs-perl=4.040-0ubuntu0.24.04.1 \
         ninja-build=1.11.1-2 \
+        python3-venv=3.12.3-0ubuntu2.1 \
         qemu-user-static=1:8.2.2+ds-0ubuntu1.18 \
 && rm -rf /var/lib/apt/lists/*
 

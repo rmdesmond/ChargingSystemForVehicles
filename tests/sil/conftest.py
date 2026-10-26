@@ -10,8 +10,8 @@ printed when a test fails, so the log is in the pytest output.
 """
 from __future__ import annotations
 
-from concurrent.futures import process
-from importlib.resources import path
+#from concurrent.futures import process
+#from importlib.resources import path
 import os
 import signal
 import socket
@@ -19,7 +19,7 @@ import subprocess
 import time
 from dataclasses import dataclass, field
 from pathlib import Path
-from urllib import request
+#from urllib import request
 
 import pytest
 
