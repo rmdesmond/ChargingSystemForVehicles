@@ -46,9 +46,17 @@ ci_lint() {
     echo "pyflakes: OK"
 }
 
+# Coverage counts the unit tests AND the SIL suite, both run against the
+# instrumented binaries, then the gate compares the totals with the committed
+# threshold. The 'coverage' CMake target alone is the unit-only quick check.
 ci_test() {
     cmake --preset coverage
-    cmake --build --preset coverage --target coverage
+    cmake --build --preset coverage --target coverage-zero
+    ctest --preset coverage
+    CHARGER_DAEMON=build-coverage/app/charger-daemon "$(python_bin)/pytest" --quiet tests/sil
+    cmake --build --preset coverage --target coverage-report
+    scripts/coverage-gate.py build-coverage/coverage/summary.txt \
+        --badge build-coverage/coverage/badge.json
 }
 
 # The junit file is the record CI keeps: it carries each test's captured

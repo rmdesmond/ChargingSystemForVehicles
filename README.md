@@ -3,6 +3,8 @@
 [![ci](https://github.com/rmdesmond/ChargingSystemForVehicles/actions/workflows/ci.yml/badge.svg)]
 (https://github.com/rmdesmond/ChargingSystemForVehicles/actions/workflows/ci.yml)
 
+[![coverage](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/rmdesmond/ChargingSystemForVehicles/gh-pages/coverage.json)](https://github.com/rmdesmond/ChargingSystemForVehicles/actions/workflows/ci.yml)
+
 A small EV charge controller built end to end: a C++17 daemon for embedded
 Linux on a Raspberry Pi 5 that runs the charging state machine, plus the
 pipeline that builds, tests, signs and ships it. The daemon is deliberately
@@ -73,6 +75,16 @@ git config core.hooksPath .githooks
 
 CI runs `scripts/ci.sh` inside the image built from `docker/Dockerfile`, so a
 failure on a pull request can be reproduced locally with the last command.
+
+### Coverage rule
+
+`scripts/ci.sh test` measures line and branch coverage of the product code
+under the unit tests and the SIL suite together, then
+`scripts/coverage-gate.py` fails the step if either number is below
+`.coverage-threshold`. The thresholds only go up: every Friday, raise them to a
+few points under what `main` measures. A pull request that needs the threshold
+lowered is a pull request that removed a test; fix the test, not the number.
+The badge above is the number last measured on `main`.
 
 ## Architecture
 
