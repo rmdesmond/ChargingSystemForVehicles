@@ -1,0 +1,6 @@
+# Minimum coverage, in percent, of product code under unit tests plus the SIL
+# suite (scripts/ci.sh test). Checked by scripts/coverage-gate.py. These numbers
+# only go up: raise them on Fridays, never lower them to pass a pull request.
+# Set 2026-10-26 from 96.8 / 82.7 measured, minus five.
+lines 91
+branches 77

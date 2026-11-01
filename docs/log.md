@@ -84,4 +84,10 @@ format: OK
 9 passed in 3.27s`
 CI build timings for build, lint, and test are 1m35s, 1m20s, and 1m28s, respectively.
 
-**10/26/26** SIL in CI, Python in the build image, pyflakes in lint
+**10/26/26 through 11/1/26** SIL in CI, Python in the build image, pyflakes in lint
+Implemented coverage-gate.py and added it to the CI.
+scripts/ci.sh test 2>&1 | tail -4
+  functions......: 92.4% (61 of 66 functions)
+  branches......: 82.7% (239 of 289 branches)
+coverage lines     96.8% (420 of 434) threshold  91.0% ok
+coverage branches  82.7% (239 of 289) threshold  77.0% ok

@@ -41,22 +41,48 @@ set(LCOV_EXCLUDES
     --exclude "/usr/*"
 )
 
-add_custom_target(coverage
-    # 1. Start from zero so counts from an earlier run cannot leak in.
-    COMMAND ${LCOV_EXECUTABLE} ${LCOV_OPTIONS} --zerocounters --directory ${CMAKE_BINARY_DIR}
+# The report is produced by three targets so that scripts/ci.sh can run the
+# SIL suite against the instrumented daemon between the unit tests and the
+# capture: counts in the .gcda files accumulate until they are zeroed.
+# coverage-zero forget every count (and build the instrumented binaries)
+# coverage-report read the counts into a report, product code only
+# coverage zero, run the unit tests, report: the developer's one-liner
+set(COVERAGE_REPORT_COMMANDS
     COMMAND ${CMAKE_COMMAND} -E make_directory ${COVERAGE_DIR}
-    # 2. Run every test. A failing test fails the target.
-    COMMAND ${CMAKE_CTEST_COMMAND} --test-dir ${CMAKE_BINARY_DIR} --output-on-failure
-    # 3. Collect the counts from the .gcda files, product code only.
+    # Collect the counts from the .gcda files, product code only.
     COMMAND ${LCOV_EXECUTABLE} ${LCOV_OPTIONS} --capture --directory ${CMAKE_BINARY_DIR}
         ${LCOV_EXCLUDES} --output-file ${COVERAGE_DIR}/charger.info
-    # 4. Browsable report. genhtml prints the totals; keep a copy for CI.
+    # Browsable report. genhtml prints the totals; keep a copy for CI.
     COMMAND ${GENHTML_EXECUTABLE} ${LCOV_OPTIONS} ${COVERAGE_DIR}/charger.info
         --output-directory ${COVERAGE_DIR}/html
     COMMAND ${LCOV_EXECUTABLE} --rc branch_coverage=1 --summary ${COVERAGE_DIR}/charger.info
         > ${COVERAGE_DIR}/summary.txt
+)
+
+add_custom_target(coverage-zero
+    COMMAND ${LCOV_EXECUTABLE} ${LCOV_OPTIONS} --zerocounters --directory ${CMAKE_BINARY_DIR}
     DEPENDS charger_tests charger-daemon
     WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
-    COMMENT "Running tests and measuring coverage"
+    COMMENT "Zeroing coverage counters"
+    VERBATIM
+)
+
+add_custom_target(coverage-report
+    ${COVERAGE_REPORT_COMMANDS}
+    WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
+    COMMENT "Reading coverage counters into a report"
+    VERBATIM
+)
+
+add_custom_target(coverage
+    # 1. Start from zero so counts from an earlier run cannot leak in.
+    COMMAND ${LCOV_EXECUTABLE} ${LCOV_OPTIONS} --zerocounters --directory ${CMAKE_BINARY_DIR}
+    # 2. Run every unit test. A failing test fails the target.
+    COMMAND ${CMAKE_CTEST_COMMAND} --test-dir ${CMAKE_BINARY_DIR} --output-on-failure
+    # 3. Report.
+    ${COVERAGE_REPORT_COMMANDS}
+    DEPENDS charger_tests charger-daemon
+    WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
+    COMMENT "Running unit tests and measuring coverage"
     VERBATIM
 )
