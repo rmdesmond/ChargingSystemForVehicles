@@ -145,7 +145,7 @@ protected:
 // ---------------------------------------------------------------------------
 class TransitionTest : public StateMachineTest, public ::testing::WithParamInterface<Row> {};
 
-TEST_P(TransitionTest, MatchesDesign) {
+TEST_P(TransitionTest, REQ_001_MatchesDesign) {
     const Row& row = GetParam();
     driveTo(row.from);
 
@@ -163,7 +163,7 @@ INSTANTIATE_TEST_SUITE_P(DesignTable, TransitionTest, ::testing::ValuesIn(kDesig
 // ---------------------------------------------------------------------------
 class IgnoredEventTest : public StateMachineTest, public ::testing::WithParamInterface<Row> {};
 
-TEST_P(IgnoredEventTest, LeavesStateAndContactorAlone) {
+TEST_P(IgnoredEventTest, REQ_001_LeavesStateAndContactorAlone) {
     const Row& row = GetParam();
     driveTo(row.from);
 
@@ -178,7 +178,7 @@ INSTANTIATE_TEST_SUITE_P(NotInTable, IgnoredEventTest, ::testing::ValuesIn(ignor
                          rowName);
 
 // The two groups above must account for all 6 x 7 pairs, with no pair twice.
-TEST(DesignTableTest, CoversEveryStateEventPairExactlyOnce) {
+TEST(DesignTableTest, REQ_001_CoversEveryStateEventPairExactlyOnce) {
     EXPECT_EQ(kDesign.size() + ignoredPairs().size(),
               std::size(kAllStates) * std::size(kAllEvents));
     for (std::size_t i = 0; i < kDesign.size(); ++i) {
@@ -193,7 +193,7 @@ TEST(DesignTableTest, CoversEveryStateEventPairExactlyOnce) {
 // ---------------------------------------------------------------------------
 
 // REQ-002, REQ-003: close on entering Charging, open on leaving, in that order.
-TEST_F(StateMachineTest, SessionClosesThenOpensContactorExactlyOnce) {
+TEST_F(StateMachineTest, REQ_002_REQ_003_SessionClosesThenOpensContactorExactlyOnce) {
     {
         InSequence inOrder;
         EXPECT_CALL(contactor_, close()).Times(1);
@@ -206,8 +206,26 @@ TEST_F(StateMachineTest, SessionClosesThenOpensContactorExactlyOnce) {
     EXPECT_EQ(machine_.state(), State::Available);
 }
 
+// REQ-004: Fault is honoured from every state, and the contactor is commanded
+// open each time, even where it was already open. One generated test per state.
+class FaultFromTest : public StateMachineTest, public ::testing::WithParamInterface<State> {};
+
+TEST_P(FaultFromTest, REQ_004_OpensContactorAndEntersFaulted) {
+    driveTo(GetParam());
+    EXPECT_CALL(contactor_, open()).Times(1);
+    EXPECT_CALL(contactor_, close()).Times(0);
+    EXPECT_TRUE(machine_.handle(Event::Fault));
+    EXPECT_EQ(machine_.state(), State::Faulted);
+}
+
+std::string stateName(const ::testing::TestParamInfo<State>& param) {
+    return std::string(toString(param.param));
+}
+
+INSTANTIATE_TEST_SUITE_P(EveryState, FaultFromTest, ::testing::ValuesIn(kAllStates), stateName);
+
 // REQ-005: nothing closes the contactor while Faulted; only Clear leaves.
-TEST_F(StateMachineTest, NeverClosesContactorWhileFaulted) {
+TEST_F(StateMachineTest, REQ_005_NeverClosesContactorWhileFaulted) {
     driveTo(State::Faulted);
     EXPECT_CALL(contactor_, close()).Times(0);
 
@@ -221,7 +239,7 @@ TEST_F(StateMachineTest, NeverClosesContactorWhileFaulted) {
 
 // REQ-007: the hazard from Monday's safety notes, contactor closed with no
 // vehicle. An EvReady event alone must not energise the cable.
-TEST_F(StateMachineTest, RefusesToCloseWhenVehicleIsNotPluggedIn) {
+TEST_F(StateMachineTest, REQ_007_RefusesToCloseWhenVehicleIsNotPluggedIn) {
     driveTo(State::SuspendedEV);
     ON_CALL(vehicle_, isPluggedIn()).WillByDefault(Return(false));
     EXPECT_CALL(contactor_, close()).Times(0);
@@ -231,7 +249,7 @@ TEST_F(StateMachineTest, RefusesToCloseWhenVehicleIsNotPluggedIn) {
     EXPECT_EQ(machine_.state(), State::Faulted);
 }
 
-TEST_F(StateMachineTest, RefusesToCloseWhenVehicleIsNotReady) {
+TEST_F(StateMachineTest, REQ_007_RefusesToCloseWhenVehicleIsNotReady) {
     driveTo(State::SuspendedEV);
     ON_CALL(vehicle_, isReady()).WillByDefault(Return(false));
     EXPECT_CALL(contactor_, close()).Times(0);
@@ -243,20 +261,20 @@ TEST_F(StateMachineTest, RefusesToCloseWhenVehicleIsNotReady) {
 
 // REQ-006: the Preparing timeout, tested at its boundary.
 // ---------------------------------------------------------------------------
-TEST_F(StateMachineTest, PreparingDoesNotTimeOutBefore60Seconds) {
+TEST_F(StateMachineTest, REQ_006_PreparingDoesNotTimeOutBefore60Seconds) {
     driveTo(State::Preparing);
     clock_.advance(StateMachine::kPreparingTimeout - 1ms);
     machine_.tick();
     EXPECT_EQ(machine_.state(), State::Preparing);
 }
 
-TEST_F(StateMachineTest, PreparingTimesOutToAvailableAt60Seconds) {
+TEST_F(StateMachineTest, REQ_006_PreparingTimesOutToAvailableAt60Seconds) {
     driveTo(State::Preparing);
     clock_.advance(StateMachine::kPreparingTimeout);
     machine_.tick();
     EXPECT_EQ(machine_.state(), State::Available);
 }
-TEST_F(StateMachineTest, TimeoutAppliesOnlyToPreparing) {
+TEST_F(StateMachineTest, REQ_006_TimeoutAppliesOnlyToPreparing) {
     driveTo(State::SuspendedEV);
     clock_.advance(24h);
     machine_.tick();
@@ -265,7 +283,7 @@ TEST_F(StateMachineTest, TimeoutAppliesOnlyToPreparing) {
 
 // REQ-011: the contactor is asked whether it really closed. A device that
 // does not report closed is commanded open, and the session is over.
-TEST_F(StateMachineTest, FaultsWhenTheContactorDoesNotReportClosed) {
+TEST_F(StateMachineTest, REQ_011_FaultsWhenTheContactorDoesNotReportClosed) {
     driveTo(State::SuspendedEV);
     ON_CALL(contactor_, isClosed()).WillByDefault(Return(false));
     {
@@ -277,7 +295,7 @@ TEST_F(StateMachineTest, FaultsWhenTheContactorDoesNotReportClosed) {
     EXPECT_EQ(machine_.state(), State::Faulted);
 }
 
-TEST_F(StateMachineTest, ChecksTheContactorOnlyAfterCommandingItClosed) {
+TEST_F(StateMachineTest, REQ_011_ChecksTheContactorOnlyAfterCommandingItClosed) {
     // A device that reports open is normal everywhere except just after close().
     ON_CALL(contactor_, isClosed()).WillByDefault(Return(false));
     driveTo(State::SuspendedEV);
@@ -303,7 +321,7 @@ TEST(ScaledClockTest, AtScaleOneItIsItsBase) {
     EXPECT_EQ(scaled.now(), base.now());
 }
 
-TEST_F(StateMachineTest, PreparingTimesOutInThreeSecondsAtScaleTwenty) {
+TEST_F(StateMachineTest, REQ_006_PreparingTimesOutInThreeSecondsAtScaleTwenty) {
     const charger::ScaledClock fast(clock_, 20.0);
     StateMachine machine(vehicle_, contactor_, fast);
     machine.handle(Event::PlugIn);

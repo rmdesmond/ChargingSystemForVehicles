@@ -25,7 +25,7 @@ struct Spelling {
 
 class AcceptedLineTest : public ::testing::TestWithParam<Spelling> {};
 
-TEST_P(AcceptedLineTest, ParsesToItsCommand) {
+TEST_P(AcceptedLineTest, REQ_012_ParsesToItsCommand) {
     const Command command = parseCommand(GetParam().line);
     EXPECT_TRUE(command.valid()) << command.reason;
     EXPECT_EQ(command.kind, GetParam().kind);
@@ -43,7 +43,7 @@ INSTANTIATE_TEST_SUITE_P(
                       Spelling{"CURRENT 7.5\r", Kind::Current},
                       Spelling{"CURRENT   0", Kind::Current}));
 
-TEST(LineProtocolTest, CurrentCarriesItsValue) {
+TEST(LineProtocolTest, REQ_012_CurrentCarriesItsValue) {
     EXPECT_DOUBLE_EQ(parseCommand("CURRENT 16").amperes, 16.0);
     EXPECT_DOUBLE_EQ(parseCommand("CURRENT 7.5").amperes, 7.5);
     EXPECT_DOUBLE_EQ(parseCommand("CURRENT 80").amperes, 80.0);
@@ -51,7 +51,7 @@ TEST(LineProtocolTest, CurrentCarriesItsValue) {
 
 class RefusedLineTest : public ::testing::TestWithParam<const char*> {};
 
-TEST_P(RefusedLineTest, IsInvalidWithAReason) {
+TEST_P(RefusedLineTest, REQ_012_IsInvalidWithAReason) {
     const Command command = parseCommand(GetParam());
     EXPECT_FALSE(command.valid());
     EXPECT_EQ(command.kind, Kind::Invalid);
@@ -67,7 +67,7 @@ INSTANTIATE_TEST_SUITE_P(Lines, RefusedLineTest,
                                            "CURRENT abc", "CURRENT 16A", "CURRENT 1e400",
                                            "CURRENT -1", "CURRENT 81"));
 
-TEST(LineProtocolTest, ReasonsNameTheProblem) {
+TEST(LineProtocolTest, REQ_012_ReasonsNameTheProblem) {
     EXPECT_EQ(parseCommand("").reason, "empty line");
     EXPECT_EQ(parseCommand("HELLO").reason, "unknown command");
     EXPECT_EQ(parseCommand("CURRENT").reason, "CURRENT needs a value in amperes");
@@ -85,7 +85,7 @@ TEST(SocketVehicleTest, StartsUnpluggedAndNotReady) {
     EXPECT_DOUBLE_EQ(vehicle.requestedCurrentA(), 0.0);
 }
 
-TEST(SocketVehicleTest, PlugAndReadySetTheSignalsAndRaiseTheirEvents) {
+TEST(SocketVehicleTest, REQ_012_PlugAndReadySetTheSignalsAndRaiseTheirEvents) {
     SocketVehicle vehicle;
     EXPECT_EQ(vehicle.apply(parseCommand("PLUG")), Event::PlugIn);
     EXPECT_TRUE(vehicle.isPluggedIn());
@@ -95,7 +95,7 @@ TEST(SocketVehicleTest, PlugAndReadySetTheSignalsAndRaiseTheirEvents) {
     EXPECT_TRUE(vehicle.isReady());
 }
 
-TEST(SocketVehicleTest, SuspendClearsReadyAndUnplugClearsBoth) {
+TEST(SocketVehicleTest, REQ_012_SuspendClearsReadyAndUnplugClearsBoth) {
     SocketVehicle vehicle;
     vehicle.apply(parseCommand("PLUG"));
     vehicle.apply(parseCommand("READY"));
@@ -110,7 +110,7 @@ TEST(SocketVehicleTest, SuspendClearsReadyAndUnplugClearsBoth) {
     EXPECT_FALSE(vehicle.isReady());
 }
 
-TEST(SocketVehicleTest, OperatorCommandsRaiseEventsWithoutTouchingSignals) {
+TEST(SocketVehicleTest, REQ_012_OperatorCommandsRaiseEventsWithoutTouchingSignals) {
     SocketVehicle vehicle;
     EXPECT_EQ(vehicle.apply(parseCommand("AUTH")), Event::Authorize);
     EXPECT_EQ(vehicle.apply(parseCommand("FAULT")), Event::Fault);
@@ -119,7 +119,7 @@ TEST(SocketVehicleTest, OperatorCommandsRaiseEventsWithoutTouchingSignals) {
     EXPECT_FALSE(vehicle.isReady());
 }
 
-TEST(SocketVehicleTest, CurrentStateAndInvalidRaiseNothing) {
+TEST(SocketVehicleTest, REQ_012_CurrentStateAndInvalidRaiseNothing) {
     SocketVehicle vehicle;
     EXPECT_EQ(vehicle.apply(parseCommand("CURRENT 32")), std::nullopt);
     EXPECT_DOUBLE_EQ(vehicle.requestedCurrentA(), 32.0);

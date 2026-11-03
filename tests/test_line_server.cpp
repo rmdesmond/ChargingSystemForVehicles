@@ -93,7 +93,7 @@ protected:
 };
 
 // REQ-012: a line in, a reply out, in order, for as long as the client stays.
-TEST_F(LineServerTest, AnswersEveryLineOnACommandSocket) {
+TEST_F(LineServerTest, REQ_012_AnswersEveryLineOnACommandSocket) {
     LineServer server(path_, 0600, false);
     ASSERT_TRUE(server.listening());
 
@@ -109,7 +109,7 @@ TEST_F(LineServerTest, AnswersEveryLineOnACommandSocket) {
     ASSERT_EQ(lines_.size(), 2U);
 }
 
-TEST_F(LineServerTest, ReassemblesALineThatArrivesInPieces) {
+TEST_F(LineServerTest, REQ_012_ReassemblesALineThatArrivesInPieces) {
     LineServer server(path_, 0600, false);
     Client client(path_);
     turn(server);
@@ -124,7 +124,7 @@ TEST_F(LineServerTest, ReassemblesALineThatArrivesInPieces) {
     EXPECT_EQ(client.readLine(), "ECHO CURRENT 16");
 }
 
-TEST_F(LineServerTest, RefusesALineLongerThanTheLimit) {
+TEST_F(LineServerTest, REQ_015_RefusesALineLongerThanTheLimit) {
     LineServer server(path_, 0600, false);
     Client client(path_);
     turn(server);
@@ -136,7 +136,7 @@ TEST_F(LineServerTest, RefusesALineLongerThanTheLimit) {
 }
 
 // REQ-013: the status socket greets and hangs up.
-TEST_F(LineServerTest, GreetsAndClosesOnAStatusSocket) {
+TEST_F(LineServerTest, REQ_013_GreetsAndClosesOnAStatusSocket) {
     LineServer server(path_, 0666, true);
     greeting_ = "STATE Available";
 
@@ -169,7 +169,7 @@ TEST_F(LineServerTest, ServesSeveralClientsAtOnceAndForgetsTheOnesThatLeave) {
     EXPECT_EQ(server.clientCount(), 2U);
 }
 
-TEST_F(LineServerTest, SetsThePermissionBitsAndReplacesAStaleSocketFile) {
+TEST_F(LineServerTest, REQ_014_SetsThePermissionBitsAndReplacesAStaleSocketFile) {
     {
         const LineServer stale(path_, 0600, false);
         ASSERT_TRUE(stale.listening());

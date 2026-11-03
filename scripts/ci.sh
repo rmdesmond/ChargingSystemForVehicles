@@ -68,11 +68,17 @@ ci_sil() {
     "$(python_bin)/pytest" --quiet --junitxml=build-sil/junit.xml tests/sil
 }
 
+# Needs nothing but python3: no build, no venv. CI runs it outside the image.
+ci_trace() {
+    scripts/trace.py --check
+}
+
 case "${1:-}" in
     build) ci_build ;;
     lint) ci_lint ;;
     test) ci_test ;;
     sil) ci_sil ;;
-    all) ci_build; ci_lint; ci_test; ci_sil ;;
+    trace) ci_trace ;;
+    all) ci_build; ci_lint; ci_test; ci_sil; ci_trace ;;
     *) sed -n '2,10p' "$0" | sed 's/^# \{0,1\}//'; exit 2 ;;
 esac
