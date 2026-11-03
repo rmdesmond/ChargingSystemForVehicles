@@ -57,7 +57,7 @@ protected:
 
 // REQ-008: readiness, liveness and shutdown are reported with the exact
 // strings the sd_notify protocol defines.
-TEST_F(NotifySocketTest, SendsTheProtocolStrings) {
+TEST_F(NotifySocketTest, REQ_008_SendsTheProtocolStrings) {
     ASSERT_TRUE(bound_);
     ServiceNotifier notifier(path_, 10s);
 
@@ -69,7 +69,7 @@ TEST_F(NotifySocketTest, SendsTheProtocolStrings) {
     EXPECT_EQ(receive(), "STOPPING=1");
 }
 
-TEST_F(NotifySocketTest, ReadsSocketAndWatchdogFromTheEnvironment) {
+TEST_F(NotifySocketTest, REQ_008_ReadsSocketAndWatchdogFromTheEnvironment) {
     ASSERT_TRUE(bound_);
     ::setenv("NOTIFY_SOCKET", path_.c_str(), 1);
     ::setenv("WATCHDOG_USEC", "10000000", 1);

@@ -93,9 +93,9 @@ flowchart TB
     subgraph pi["Raspberry Pi 5, embedded Linux"]
         daemon["charger-daemon<br/>C++17 state machine"]
     end
-    backend["OCPP central system (SteVe)<br/>coming in week 3"]
-    mcu["Safety MCU: Pi Pico + FreeRTOS<br/>owns the contactor<br/>coming in week 4"]
-    sil["SIL harness (pytest)<br/>virtual vehicle, meter, power module<br/>coming in week 2"]
+    backend["OCPP central system (SteVe)<br/>"]
+    mcu["Safety MCU: Pi Pico + FreeRTOS<br/>owns the contactor<br/>"]
+    sil["SIL harness (pytest)<br/>virtual vehicle, meter, power module<br/>"]
     daemon <-->|"OCPP 1.6J over WebSocket"| backend
     daemon <-->|"framed UART, CRC-16, heartbeat"| mcu
     sil -.->|"drives the real daemon binary"| daemon
@@ -118,7 +118,7 @@ Raspberry Pi Serial Port - for checking boot and if no network address
 
 Deploy from the aarch64 development VM with `scripts/deploy.sh`. This is a
 development loop only: nothing is signed and there is no rollback. Releases
-and over-the-air updates replace it in week 2.
+and over-the-air updates replace it.
 
 ## Testing
 
@@ -126,11 +126,11 @@ Unit tests today; SIL and HIL to follow. See [docs/testing.md](docs/testing.md).
 
 ## Releases and OTA
 
-Signed releases and A/B updates with rollback arrive in week 2.
+Signed releases and A/B updates with rollback upcoming.
 
 ## Safety concept
 
-Hazards, safe states and the Linux/MCU split. See
+FUTURE NOTES: Hazards, safe states and the Linux/MCU split. See
 [docs/safety-notes.md](docs/safety-notes.md).
 
 ## Decision records

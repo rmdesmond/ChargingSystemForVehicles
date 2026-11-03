@@ -110,6 +110,16 @@ jobs:
           name: sil-junit
           path: build-sil/junit.xml
           if-no-files-found: warn
+  # Traceability: every requirement in docs/requirements.md has a test that
+  # carries its id, no test names an unknown id, and the committed matrix is
+  # what the sources say. Pure python3, no image: it answers in seconds.
+  trace:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - name: Requirements to tests
+        run: scripts/ci.sh trace
   # The coverage badge: the number measured on main, published as a small JSON
   # file on the gh-pages branch, which the README's shields.io badge reads.
   # Only this job may write to the repository, and only to that branch.
@@ -133,6 +143,7 @@ jobs:
           cd badge
           mv ../badge.json coverage.json
           git add coverage.json
-          git -c user.name=ci -c user.email=ci@users.noreply.github.com \
+          git -c user.name='github-actions[bot]' \
+              -c user.email='41898282+github-actions[bot]@users.noreply.github.com' \
             commit --quiet -m "coverage badge from $GITHUB_SHA"
           git push --quiet --force "https://x-access-token:$TOKEN@github.com/$REPO" gh-pages

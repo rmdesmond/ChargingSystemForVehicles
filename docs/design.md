@@ -6,7 +6,7 @@ row by row.
 
 ## States
 
-The names are the OCPP 1.6 connector statuses, so week 3's status reporting is
+The names are the OCPP 1.6 connector statuses, so future status reporting is
 a direct mapping.
 
 | State      | Meaning                                                    | Contactor |
@@ -57,46 +57,35 @@ other 25 are ignored: the state does not change and the contactor is not touched
 
 ## Requirements
 
-- **REQ-001** The controller shall take exactly the transitions in the table and ignore every other event.
-- **REQ-002** The contactor shall be commanded closed only on entering Charging.
-- **REQ-003** The contactor shall be commanded open on every transition out of Charging.
-- **REQ-004** A Fault event in any state shall command the contactor open and enter Faulted.
-- **REQ-005** While Faulted, the contactor shall not be commanded closed; only Clear leaves Faulted.
-- **REQ-006** If Preparing lasts 60 s without authorization, the controller shall return to Available.
-- **REQ-007** The contactor shall not be commanded closed unless the vehicle interface reports plugged in and ready; otherwise the controller shall open the contactor and enter Faulted.
+The numbered requirements live in [requirements.md](requirements.md), one
+table, each with a type; the trace matrix in [trace-matrix.md](trace-matrix.md)
+says which tests verify each one. REQ-001 to REQ-007 come from the transition
+table above; the sections below explain the rest.
 
 ## Running as a service
 
-The daemon is started by systemd. These requirements describe how the two
-cooperate; REQ-010 is met by the unit file, not by code.
-
-- **REQ-008** The daemon shall report readiness once start-up is complete, and shall report liveness from its main loop at intervals of at most half the watchdog timeout it was given.
-- **REQ-009** On SIGTERM the daemon shall leave its main loop within one loop period (1 s) and exit with status 0.
-- **REQ-010** If the daemon reports no liveness for 10 s, or exits with a failure, the service manager shall restart it.
+The daemon is started by systemd. REQ-008 (readiness and liveness), REQ-009
+(clean stop on SIGTERM) and REQ-010 (restart) describe how the two cooperate;
+REQ-010 is met by the unit file, not by code.
 
 ## Contactor feedback
 
-The contactor interface reports whether the device is actually closed. From
-Week 2 the controller uses that report; in Week 4 the report comes from the
+The contactor interface reports whether the device is actually closed. Initially,
+the controller uses that report; later the report comes from the
 safety MCU.
 
-- **REQ-011** After commanding the contactor closed, if the contactor does
-  not report closed, the controller shall command it open and enter Faulted.
+REQ-011 says what the controller does when the report says open.
 
 ## Harness control sockets
 
-The daemon has no vehicle hardware until Week 4. Until then (and in CI for
+The daemon has no vehicle hardware until later. Until then (and in CI for
 ever after) the vehicle, and the operator, are played by a test harness over
 two unix sockets. The vehicle socket is a command channel; the status socket
 is a read-only observation channel that anything on the device may use (an
 operator with `nc`, a health check, a HIL runner).
 
-- **REQ-012** When started with `--vehicle-socket PATH`, the daemon shall
-  accept newline-delimited commands on that socket, apply them in order, and
-  answer every line with `STATE <state>` or `ERR <reason>`. Malformed or
-  unknown lines shall change nothing.
-- **REQ-013** When started with `--status-socket PATH`, the daemon shall
-  write `STATE <state>` to every connection on that socket and close it.
+REQ-012 (vehicle socket), REQ-013 (status socket), REQ-014 (socket modes)
+and REQ-015 (line length limit) state the contract.
 
 ### Vehicle socket protocol
 
@@ -118,7 +107,7 @@ ignored). The reply to every line is one line.
 
 `AUTH` and `CLEAR` are not things a vehicle does; they are the operator (a
 card, a backend, a technician). The socket is the harness's channel to the
-whole outside world, which is why it survives the Week 4 `--mcu` mode: plug
+whole outside world, which is why it survives the `--mcu` mode: plug
 and ready sensing move to the MCU, `AUTH`, `CLEAR` and `STATE` stay here.
 See `docs/adr/0003-harness-control-sockets.md`.
 

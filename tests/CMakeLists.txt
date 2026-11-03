@@ -49,6 +49,15 @@ set_tests_properties(daemon_rejects_unknown_argument PROPERTIES
 # status 0. 'timeout' sends the signal after 2 s and passes the status through.
 # Native only: here the command is 'timeout', so CTest adds no emulator.
 if(NOT CMAKE_CROSSCOMPILING)
-    add_test(NAME daemon_service_stops_on_sigterm
+    add_test(NAME REQ_009_daemon_service_stops_on_sigterm
         COMMAND timeout --preserve-status --signal=TERM 2 $<TARGET_FILE:charger-daemon>)
 endif()
+
+# REQ-010 is met by the unit file. This reads the two lines that meet it, so
+# the requirement is traced to a check that runs on every pull request; the
+# live proof (a killed daemon comes back) is a bench test, not a CI one.
+add_test(NAME REQ_010_unit_file_restarts_on_failure
+    COMMAND grep -E "^(WatchdogSec=10|Restart=on-failure)$"
+        ${CMAKE_SOURCE_DIR}/systemd/charger-daemon.service)
+set_tests_properties(REQ_010_unit_file_restarts_on_failure PROPERTIES
+    PASS_REGULAR_EXPRESSION "WatchdogSec=10\nRestart=on-failure")

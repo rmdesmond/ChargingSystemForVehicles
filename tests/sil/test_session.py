@@ -6,6 +6,8 @@ daemon *says* (the reply to every command and the status socket) and on what
 it *does* (the contactor lines in its log), not on anything inside the process.
 """
 
+import os
+import stat
 import time
 
 import pytest
@@ -63,6 +65,15 @@ def test_status_socket_is_read_only_and_reusable(daemon, vehicle):
     vehicle.plug()
     for _ in range(5):
         assert read_status(daemon.status_socket) == "Preparing"
+
+@pytest.mark.req("REQ-014")
+def test_socket_modes_restrict_commands_but_not_status(daemon):
+    # The command channel is private to the harness; the state is public.
+    vehicle_mode = os.stat(daemon.vehicle_socket).st_mode
+    status_mode = os.stat(daemon.status_socket).st_mode
+    assert stat.S_ISSOCK(vehicle_mode) and stat.S_ISSOCK(status_mode)
+    assert stat.S_IMODE(vehicle_mode) == 0o600
+    assert stat.S_IMODE(status_mode) == 0o666
 
 @pytest.mark.req("REQ-012")
 def test_malformed_lines_are_refused_and_change_nothing(daemon, vehicle):
