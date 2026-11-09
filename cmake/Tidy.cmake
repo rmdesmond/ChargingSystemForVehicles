@@ -38,4 +38,5 @@ function(charger_add_tidy_target)
         COMMENT "Running clang-tidy on the product sources"
         VERBATIM
     )
+    add_dependencies(tidy charger_version)
 endfunction()
