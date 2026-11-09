@@ -39,6 +39,13 @@ gtest_discover_tests(charger_tests)
 # target, CTest adds the emulator from the toolchain file.
 add_test(NAME daemon_demo COMMAND charger-daemon --demo)
 
+# REQ-018: --version prints one parseable line on stdout and exits 0. The
+# string is whatever 'git describe' said at build time: a tag, a tag plus a
+# distance and a commit, a bare commit, or 'unknown' outside a checkout.
+add_test(NAME REQ_018_version_flag_prints_one_line COMMAND charger-daemon --version)
+set_tests_properties(REQ_018_version_flag_prints_one_line PROPERTIES
+    PASS_REGULAR_EXPRESSION "^charger-daemon (v[0-9][^ \n]*|[0-9a-f]+(-dirty)?|unknown)\n$")
+
 # A wrong argument must print the usage line. With PASS_REGULAR_EXPRESSION the
 # test passes when the output matches, whatever the exit status.
 add_test(NAME daemon_rejects_unknown_argument COMMAND charger-daemon --bogus)

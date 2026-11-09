@@ -35,6 +35,7 @@ service manager).
 | REQ-013 | interface | When started with `--status-socket PATH`, the daemon shall write `STATE <state>` to every connection on that socket and close it. |
 | REQ-014 | interface | The vehicle socket shall be created with mode 0600 and the status socket with mode 0666; a leftover socket file at either path shall be replaced at start-up. |
 | REQ-015 | interface | A command line longer than 256 bytes shall be answered with `ERR line too long` and shall not be applied. |
+| REQ-018 | interface | `charger-daemon --version` shall print `charger-daemon <version>` on standard output and exit with status 0, where `<version>` is the `git describe` string of the build. |
 
 Reserved: REQ-016 (upcoming, CAN power module), REQ-017 (upcoming, 500 ms
 heartbeat loss opens the contactor).

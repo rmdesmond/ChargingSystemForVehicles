@@ -4,6 +4,7 @@ build-*/
 CMakeUserPresets.json
 compile_commands.json
 Testing/
+dist/
 
 # Compiler and coverage output
 *.o
