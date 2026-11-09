@@ -6,6 +6,7 @@
 #include <chrono>
 #include <csignal>
 #include <cstdlib>
+#include <fstream>
 #include <iostream>
 #include <memory>
 #include <optional>
@@ -19,6 +20,8 @@
 #include "charger/SimContactor.h"
 #include "charger/SocketVehicle.h"
 #include "charger/StateMachine.h"
+
+#include "Version.h"
 
 namespace {
 
@@ -34,16 +37,22 @@ public:
 
 // Everything the command line can set. Parsed once in main().
 struct Options {
+    bool version{false};  // print the version and exit
     bool demo{false};
     std::string vehicleSocket;  // empty: StubVehicle
     std::string statusSocket;   // empty: no status port
+    std::string releaseMarker;  // empty: do not report release verification
     bool sim{false};            // read simulation controls from the environment
     double timeScale{1.0};      // >1: the state machine's clock runs faster (test only)
 };
 
 constexpr std::string_view kUsage =
-    "usage: charger-daemon [--demo] [--vehicle-socket PATH] [--status-socket PATH]\n"
+    "usage: charger-daemon [--version] [--demo] [--vehicle-socket PATH]\n"
+    "                      [--status-socket PATH] [--release-marker PATH]\n"
     "                      [--sim] [--time-scale N]\n"
+    "  --version       print 'charger-daemon <version>' and exit\n"
+    "  --release-marker PATH  log whether this build is a verified release;\n"
+    "                  the installer writes the file next to the binary\n"
     "  --sim           simulation controls from the environment, e.g.\n"
     "                  CHARGER_SIM_CONTACTOR=stuck: close() never reports closed\n"
     "  --time-scale N  state machine timeouts run N times faster (1 to 1000); test only\n";
@@ -56,12 +65,16 @@ std::optional<Options> parseOptions(int argc, char** argv) {
     for (std::size_t i = 0; i < args.size(); ++i) {
         const std::string_view arg = args[i];
         const bool hasValue = i + 1 < args.size();
-        if (arg == "--demo") {
+        if (arg == "--version") {
+            options.version = true;
+        } else if (arg == "--demo") {
             options.demo = true;
         } else if (arg == "--vehicle-socket" && hasValue) {
             options.vehicleSocket = args[++i];
         } else if (arg == "--status-socket" && hasValue) {
             options.statusSocket = args[++i];
+        } else if (arg == "--release-marker" && hasValue) {
+            options.releaseMarker = args[++i];
         } else if (arg == "--sim") {
             options.sim = true;
         } else if (arg == "--time-scale" && hasValue) {
@@ -77,6 +90,28 @@ std::optional<Options> parseOptions(int argc, char** argv) {
         }
     }
     return options;
+}
+
+// REQ-019. The installer writes the marker only after the signature and the
+// checksums passed, and it names the version it verified. The daemon trusts
+// the file system, not the marker: a binary swapped in by hand shows up as a
+// version that does not match, and a dev deploy has no marker at all.
+void logReleaseMarker(const std::string& path) {
+    std::ifstream marker(path);
+    std::string line;
+    while (std::getline(marker, line)) {
+        if (line.rfind("version=", 0) == 0) {
+            const std::string_view verified = std::string_view{line}.substr(8);
+            if (verified == chargerVersion()) {
+                std::cerr << "charger-daemon: verified release " << verified << '\n';
+            } else {
+                std::cerr << "charger-daemon: unverified build: marker names " << verified
+                          << ", binary is " << chargerVersion() << '\n';
+            }
+            return;
+        }
+    }
+    std::cerr << "charger-daemon: unverified build: no release marker at " << path << '\n';
 }
 
 // --demo: one scripted session, including a pause requested by the vehicle.
@@ -246,6 +281,11 @@ int main(int argc, char** argv) {
     if (!options) {
         return 2;
     }
+    // REQ-018: the one line a script can parse, on stdout, then exit 0.
+    if (options->version) {
+        std::cout << "charger-daemon " << chargerVersion() << '\n';
+        return 0;
+    }
 
     // The vehicle: the stub, or the one the harness drives over a socket.
     const StubVehicle stubVehicle;
@@ -270,6 +310,11 @@ int main(int argc, char** argv) {
     }
 
     // std::cerr is unbuffered, so every line reaches the journal immediately.
+    // The version is the first thing in the log: a bug report starts there.
+    std::cerr << "charger-daemon: version " << chargerVersion() << '\n';
+    if (!options->releaseMarker.empty()) {
+        logReleaseMarker(options->releaseMarker);
+    }
     std::cerr << "charger-daemon: start in " << toString(machine.state()) << '\n';
 
     if (options->demo) {

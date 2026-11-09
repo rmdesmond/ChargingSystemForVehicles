@@ -24,7 +24,10 @@ function(charger_add_tidy_target)
         get_target_property(target_dir ${target} SOURCE_DIR)
         get_target_property(target_sources ${target} SOURCES)
         foreach(source IN LISTS target_sources)
-            list(APPEND sources "${target_dir}/${source}")
+            # Sources are relative to the target's directory, except generated
+            # ones (app/version.cpp), which CMake records as absolute paths.
+            cmake_path(ABSOLUTE_PATH source BASE_DIRECTORY "${target_dir}")
+            list(APPEND sources "${source}")
         endforeach()
     endforeach()
 
@@ -35,4 +38,5 @@ function(charger_add_tidy_target)
         COMMENT "Running clang-tidy on the product sources"
         VERBATIM
     )
+    add_dependencies(tidy charger_version)
 endfunction()
