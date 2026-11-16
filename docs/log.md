@@ -93,3 +93,5 @@ coverage lines     96.8% (420 of 434) threshold  91.0% ok
 coverage branches  82.7% (239 of 289) threshold  77.0% ok
 
 **11/2/26 - 11/3/26** Requirements Tracing. See ADR 0004 and new requirements.md
+
+**11/15/26** Signed Release via CI in GitHub. First version: v0.1.0, and installed on the Pi.
