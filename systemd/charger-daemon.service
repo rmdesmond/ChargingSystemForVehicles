@@ -13,7 +13,11 @@ Type=notify
 # The status socket is read-only (REQ-013): anyone on the device can ask the
 # state with 'nc -U /run/charger/status.sock'. The vehicle socket is the test
 # harness's command channel and is never enabled here (ADR 0003).
-ExecStart=/opt/charger/bin/charger-daemon --status-socket /run/charger/status.sock
+# The VERIFIED marker is written by the installer after the signature check;
+# the daemon reports it in its first log lines (REQ-019).
+ExecStart=/opt/charger/current/bin/charger-daemon \
+    --status-socket /run/charger/status.sock \
+    --release-marker /opt/charger/current/VERIFIED
 # systemd creates /run/charger owned by User= and removes it when the service
 # stops. It is the one writable place under ProtectSystem=strict.
 RuntimeDirectory=charger

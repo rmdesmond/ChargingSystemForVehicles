@@ -38,6 +38,7 @@ RUN apt-get update \
         git=1:2.43.0-1ubuntu7.4 \
         lcov=2.0-4ubuntu2 \
         libjson-xs-perl=4.040-0ubuntu0.24.04.1 \
+        minisign=0.11-1 \
         ninja-build=1.11.1-2 \
         python3-venv=3.12.3-0ubuntu2.1 \
         qemu-user-static=1:8.2.2+ds-0ubuntu1.18 \
