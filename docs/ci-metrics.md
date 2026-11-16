@@ -10,6 +10,7 @@ Pipeline time is the wall-clock time of the slowest job, from the run page.
 | 2026-10-16 | Intro daemon code    |  1m10s   | 1m08s | 1m01s | 1m10s |  n/a  |  n/a  | 96.8% |   81.5%  |
 | 2026-10-26 | Intro SIL            |  2m04s   | 2m04s | 1m31s | 1m18s | 1m17s |  n/a  | skip  |   skip   |
 | 2026-11-03 | Coverage Gate & Trace|  1m40s   | 1m40s | 1m19s | 1m30s | 1m12s | 0m09s | 96.8% |   82.7%  |
+| 2026-11-15 | Signed Releases start|  1m57s   | 1m57s | 1m18s | 1m33s | 1m07s | 0m04s | 96.8% |   82.7%  |
 
 ## Notes
 
@@ -20,3 +21,5 @@ Pipeline time is the wall-clock time of the slowest job, from the run page.
 - 2026-10-26: Added SIL, skipped lines and branches coverage due to code changes (this is where straight percentages are weak indicators)
 
 - 2026-11-03: Added Coverage Gate and Traceability Matrix
+
+- 2026-11-15: Signed release. Two new costs on a pull request: the test job runs the installer test (about 9 s: two scrypt key derivations in minisign plus one signing) and the image has one more package. A tag push is not a pull request: it runs the five checks and then the release job (checkout with history, package in the image, sign, publish), so a tag takes the pipeline time plus the release job.
