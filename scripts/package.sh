@@ -56,7 +56,7 @@ install -D --mode=0755 "$binary" "$root/bin/charger-daemon"
 install -D --mode=0644 systemd/charger-daemon.service "$root/systemd/charger-daemon.service"
 # The installer travels with the release for convenience; the copy that is
 # trusted is the one already on the device (it embeds the public key).
-######## RANDALL ### install -D --mode=0755 scripts/install-release.sh "$root/scripts/install-release.sh"
+install -D --mode=0755 scripts/install-release.sh "$root/scripts/install-release.sh"
 echo "$version" > "$root/VERSION"
 # Key=value, one per line: what a device or a person needs to know before
 # installing. 'hardware' is the compatibility string the OTA bundle reuses.

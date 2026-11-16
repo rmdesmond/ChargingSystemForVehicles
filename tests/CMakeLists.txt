@@ -68,3 +68,15 @@ add_test(NAME REQ_010_unit_file_restarts_on_failure
         ${CMAKE_SOURCE_DIR}/systemd/charger-daemon.service)
 set_tests_properties(REQ_010_unit_file_restarts_on_failure PROPERTIES
     PASS_REGULAR_EXPRESSION "WatchdogSec=10\nRestart=on-failure")
+
+# REQ-020: the installer, run for real against a temporary prefix with a
+# throwaway key: a good release installs, a tampered, unsigned or wrongly
+# signed one is refused. Native only: the scripts run the built daemon.
+# The embedded key check keeps keys/release.pub and the installer in step.
+if(NOT CMAKE_CROSSCOMPILING)
+    add_test(NAME REQ_020_installer_refuses_tampered_release
+        COMMAND ${CMAKE_SOURCE_DIR}/tests/release/test_install_release.sh
+            $<TARGET_FILE:charger-daemon>)
+    add_test(NAME installer_embeds_committed_public_key
+        COMMAND ${CMAKE_SOURCE_DIR}/tests/release/test_embedded_key.sh)
+endif()

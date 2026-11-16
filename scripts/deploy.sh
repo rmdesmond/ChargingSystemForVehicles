@@ -6,6 +6,10 @@
 #
 # Run from the aarch64 VM, whose native build is the Pi build. The remote user
 # needs passwordless sudo (the default on Raspberry Pi OS).
+#
+# Development loop only: the binary goes to /opt/charger/releases/dev with no
+# VERIFIED marker, so the daemon logs 'unverified build'. A signed release is
+# installed by scripts/install-release.sh into the same layout.
 set -euo pipefail
 
 host="${1:-charger}"
@@ -32,7 +36,9 @@ ssh "$host" 'sudo bash -s' <<'REMOTE'
 set -euo pipefail
 # A system account with no home directory and no login shell.
 id charger > /dev/null 2>&1 || useradd --system --no-create-home --shell /usr/sbin/nologin charger
-install -D --mode=0755 /tmp/charger-deploy/charger-daemon /opt/charger/bin/charger-daemon
+install -D --mode=0755 /tmp/charger-deploy/charger-daemon /opt/charger/releases/dev/bin/charger-daemon
+rm -f /opt/charger/releases/dev/VERIFIED # a dev build is never a verified release
+ln -sfn releases/dev /opt/charger/current
 install -D --mode=0644 /tmp/charger-deploy/charger-daemon.service \
     /etc/systemd/system/charger-daemon.service
 systemctl daemon-reload # make systemd re-read unit files
