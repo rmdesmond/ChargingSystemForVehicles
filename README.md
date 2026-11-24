@@ -1,7 +1,8 @@
 # charging-system-for-vehicles
 
 
-[![ci](https://github.com/rmdesmond/charging-system-for-vehicles/actions/workflows/ci.yml/badge.svg)](https://github.com/rmdesmond/charging-system-for-vehicles/actions/workflows/ci.yml)
+[![ci](https://github.com/rmdesmond/charging-system-for-vehicles/actions/workflows/ci.yml/badge.svg)]
+(https://github.com/rmdesmond/charging-system-for-vehicles/actions/workflows/ci.yml)
 
 [![coverage](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/rmdesmond/charging-system-for-vehicles/gh-pages/coverage.json)](https://github.com/rmdesmond/charging-system-for-vehicles/actions/workflows/ci.yml)
 
@@ -15,7 +16,7 @@ concept.
 
 Why? I saw some Rivian engineering positions open (related to EV charging) and 
 thought, "That's interesting... why don't I use Claude to write up a checklist
-of skills that are overtly asked for in the job postings and at what job level,
+of skills that are asked for in the job postings and at what job level,
 and then let me self-assess my qualifications." After that, I asked Claude to 
 come up with a project that I could exercise current skills and, more importantly, 
 learn new skills.  
