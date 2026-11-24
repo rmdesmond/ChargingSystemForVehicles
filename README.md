@@ -1,5 +1,6 @@
 # charging-system-for-vehicles
 
+
 [![ci](https://github.com/rmdesmond/charging-system-for-vehicles/actions/workflows/ci.yml/badge.svg)](https://github.com/rmdesmond/charging-system-for-vehicles/actions/workflows/ci.yml)
 
 [![coverage](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/rmdesmond/charging-system-for-vehicles/gh-pages/coverage.json)](https://github.com/rmdesmond/charging-system-for-vehicles/actions/workflows/ci.yml)
@@ -11,6 +12,21 @@ simple. The point of the project is the engineering around it: a CI/CD pipeline
 that blocks bad changes, tests at unit, software-in-the-loop and hardware
 level, signed over-the-air updates with rollback, and a documented safety
 concept.
+
+Why? I saw some Rivian engineering positions open (related to EV charging) and 
+thought, "That's interesting... why don't I use Claude to write up a checklist
+of skills that are overtly asked for in the job postings and at what job level,
+and then let me self-assess my qualifications." After that, I asked Claude to 
+come up with a project that I could exercise current skills and, more importantly, 
+learn new skills.  
+
+Will I be applying to any of the positions at Rivian? Time will tell. For now,
+I'll just be working this project as time permits.
+
+DISCLAIMER: The material is basically all Claude's - I'm not shying away
+from that (and I've already found some issues with the C++) - but the benefit, 
+and one of the biggest benefits of AI in my opinion, is the learning... if you
+ask the right questions in the right way!
 
 ## Pipeline
 
