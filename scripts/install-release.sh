@@ -29,7 +29,7 @@ set -euo pipefail
 RELEASE_PUBKEY="RWSzub/TpSmtxAzahLCiDDrEI6975VAEMyaQuy2MFm1fWXEIBkqnKZbV"
 
 prefix=/opt/charger
-repo=rmdesmond/ChargingSystemForVehicles
+repo=rmdesmond/charging-system-for-vehicles
 tag=""
 from=""
 pubkey_file=""

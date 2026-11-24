@@ -1,9 +1,9 @@
-# ChargingSystemForVehicles  
+# charging-system-for-vehicles
 
-[![ci](https://github.com/rmdesmond/ChargingSystemForVehicles/actions/workflows/ci.yml/badge.svg)]
-(https://github.com/rmdesmond/ChargingSystemForVehicles/actions/workflows/ci.yml)
 
-[![coverage](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/rmdesmond/ChargingSystemForVehicles/gh-pages/coverage.json)](https://github.com/rmdesmond/ChargingSystemForVehicles/actions/workflows/ci.yml)
+[![ci](https://github.com/rmdesmond/charging-system-for-vehicles/actions/workflows/ci.yml/badge.svg)](https://github.com/rmdesmond/charging-system-for-vehicles/actions/workflows/ci.yml)
+
+[![coverage](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/rmdesmond/charging-system-for-vehicles/gh-pages/coverage.json)](https://github.com/rmdesmond/charging-system-for-vehicles/actions/workflows/ci.yml)
 
 A small EV charge controller built end to end: a C++17 daemon for embedded
 Linux on a Raspberry Pi 5 that runs the charging state machine, plus the
